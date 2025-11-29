@@ -2,13 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './Button';
 import { Terminal, Cpu, Play, Square, Save, RefreshCw, Upload, Usb } from 'lucide-react';
 import { SerialPort } from '../types';
+import { useNavigate } from 'react-router-dom'; // Add this
 
 export const SerialMonitor: React.FC = () => {
+  const navigate = useNavigate(); // Add hook
   const [activeTab, setActiveTab] = useState<'monitor' | 'flasher' | 'dfu'>('monitor');
   const [port, setPort] = useState<SerialPort | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [baudRate, setBaudRate] = useState(115200);
+  // New State for input command
+  const [inputCmd, setInputCmd] = useState(''); 
+  
   const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
   const keepReadingRef = useRef(false);
   const terminalEndRef = useRef<HTMLDivElement>(null);
@@ -24,6 +29,26 @@ export const SerialMonitor: React.FC = () => {
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
+
+  const handleSend = async (e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+      const cmd = inputCmd.trim();
+      
+      // Secret Easter Egg
+      if (cmd.toLowerCase() === 'doom' || cmd.toLowerCase() === 'idkfa') {
+          navigate('/doom');
+          return;
+      }
+
+      if (!port || !port.writable) return;
+      
+      const encoder = new TextEncoder();
+      const writer = port.writable.getWriter();
+      await writer.write(encoder.encode(cmd + '\n'));
+      writer.releaseLock();
+      addLog(`> ${cmd}`);
+      setInputCmd('');
+  };
 
   const connect = async () => {
     if (!('serial' in navigator)) {
@@ -237,12 +262,26 @@ export const SerialMonitor: React.FC = () => {
                 <div className="text-slate-500 text-center mt-10">
                     <Terminal className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     <p>Ready to connect. Output will appear here.</p>
+                    <p className="text-xs mt-2 opacity-30">Type commands below...</p>
                 </div>
                 )}
                 {logs.map((log, i) => (
                 <div key={i} className="text-green-400 whitespace-pre-wrap break-all">{log}</div>
                 ))}
                 <div ref={terminalEndRef} />
+            </div>
+
+            <div className="bg-slate-800 p-2 border-t border-slate-700 flex gap-2">
+                <form onSubmit={handleSend} className="flex-1 flex gap-2">
+                    <input 
+                        type="text" 
+                        className="flex-1 bg-slate-900 border border-slate-700 text-white px-3 py-1 rounded font-mono text-sm focus:ring-1 focus:ring-green-500 outline-none"
+                        placeholder="Send command..."
+                        value={inputCmd}
+                        onChange={e => setInputCmd(e.target.value)}
+                    />
+                    <Button type="submit" size="sm" variant="secondary">Send</Button>
+                </form>
             </div>
 
             <div className="bg-slate-100 p-2 border-t border-slate-200 flex justify-end gap-2">

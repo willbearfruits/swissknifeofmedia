@@ -8,6 +8,7 @@ import { TutorialsPage } from './pages/TutorialsPage';
 import { ToolsPage } from './pages/ToolsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuthPage } from './pages/AuthPage';
+import { DoomPage } from './pages/DoomPage';
 
 const AppContent = () => {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ const AppContent = () => {
           <Route path="/tutorials" element={<TutorialsPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/doom" element={<DoomPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

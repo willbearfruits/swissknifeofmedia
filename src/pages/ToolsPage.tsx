@@ -5,6 +5,7 @@ import { SerialMonitor } from '../components/SerialMonitor';
 import { ToneGenerator } from '../components/ToneGenerator';
 import { TapTempo } from '../components/TapTempo';
 import { NoteConverter } from '../components/NoteConverter';
+import { DrumMachine } from '../components/DrumMachine';
 import { ExternalLink, Cpu, Zap, Music } from 'lucide-react';
 import { resolvePath } from '../utils/pathUtils';
 
@@ -53,6 +54,9 @@ export const ToolsPage = () => {
         </div>
         <div className="col-span-1 xl:col-span-2">
              <ToneGenerator />
+        </div>
+        <div className="col-span-1 xl:col-span-2">
+             <DrumMachine />
         </div>
       </div>
 

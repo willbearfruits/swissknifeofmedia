@@ -3,7 +3,7 @@ import { resolvePath } from '../utils/pathUtils';
 
 const RESOURCES_KEY = 'eduhub_resources';
 const RESOURCES_VERSION_KEY = 'eduhub_resources_version';
-const RESOURCES_VERSION = 'v3';
+const RESOURCES_VERSION = 'v4'; 
 const parseJSON = <T>(value: string | null, fallback: T): T => {
   if (!value) return fallback;
   try {
@@ -36,46 +36,6 @@ const INITIAL_RESOURCES: Resource[] = [
     isFeatured: true
   },
   {
-    id: '5',
-    title: 'Hackaday: Sweet Sweet Oscillator Sounds',
-    description: 'Hackaday project write-up with oscillator sounds and schematic reference.',
-    type: ResourceType.LINK,
-    url: 'https://hackaday.com/?s=Sweet+Sweet+Oscillator',
-    tags: ['Oscillator', 'DIY', 'Hackaday'],
-    dateAdded: '2025-11-29',
-    isFeatured: false
-  },
-  {
-    id: '6',
-    title: 'Home-Wrecker Bazz Fuss Schematic',
-    description: 'Classic single-transistor fuzz circuit notes and layout.',
-    type: ResourceType.LINK,
-    url: 'http://home-wrecker.com/bazz.html',
-    tags: ['Fuzz', 'Guitar', 'Schematic'],
-    dateAdded: '2025-11-29',
-    isFeatured: false
-  },
-  {
-    id: '7',
-    title: 'Electrosmash Big Muff Analysis',
-    description: 'In-depth analysis of the Big Muff Pi: schematic, stages, frequency plots.',
-    type: ResourceType.LINK,
-    url: 'https://www.electrosmash.com/big-muff-pi-analysis',
-    tags: ['Fuzz', 'Analysis', 'Schematic'],
-    dateAdded: '2025-11-29',
-    isFeatured: true
-  },
-  {
-    id: '8',
-    title: 'LPB-1/LPB-2 Booster Reference',
-    description: 'Simple booster schematic and walkthrough.',
-    type: ResourceType.LINK,
-    url: 'https://www.electrosmash.com/lpb1',
-    tags: ['Booster', 'Guitar', 'Schematic'],
-    dateAdded: '2025-11-29',
-    isFeatured: false
-  },
-  {
     id: '9',
     title: 'Daisy Kalimba Web Flasher',
     description: 'Web flasher for Daisy (UD/artifacts) used in the Kalimba project.',
@@ -86,23 +46,13 @@ const INITIAL_RESOURCES: Resource[] = [
     isFeatured: true
   },
   {
-    id: '2',
-    title: 'Pure Data (Pd) Vanilla',
-    description: 'Visual programming language for multimedia and audio synthesis.',
+    id: '5',
+    title: 'Hackaday: Sweet Sweet Oscillator Sounds',
+    description: 'Hackaday project write-up with oscillator sounds and schematic reference.',
     type: ResourceType.LINK,
-    url: 'https://puredata.info/',
-    tags: ['Software', 'Audio', 'Coding'],
-    dateAdded: '2023-10-05',
-    isFeatured: true
-  },
-  {
-    id: '3',
-    title: 'WLED Firmware',
-    description: 'A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control NeoPixel (WS2812B) LEDs.',
-    type: ResourceType.CODE,
-    url: 'https://kno.wled.ge/',
-    tags: ['Light Art', 'ESP32', 'Firmware'],
-    dateAdded: '2023-10-12',
+    url: 'https://hackaday.com/?s=Sweet+Sweet+Oscillator',
+    tags: ['Oscillator', 'DIY', 'Hackaday'],
+    dateAdded: '2025-11-29',
     isFeatured: false
   }
 ];
@@ -114,8 +64,8 @@ const INITIAL_TUTORIALS: Tutorial[] = [
     difficulty: 'Beginner',
     tags: ['MIDI', 'ESP32', 'Hardware'],
     isFeatured: true,
-    videoUrl: 'https://www.youtube.com/embed/wL5F9y_bL3o', // Generic MIDI controller video
-    content: `# Building Your First MIDI Controller\n\nLearn how to turn potentiometers and buttons into a USB MIDI device for Ableton Live or TouchDesigner.\n\n## Components Needed\n1. **ESP32** or **Teensy**\n2. **10k Linear Potentiometers** (B10K)\n3. **Arcade Buttons**\n\n## The Code\nWe will use the standard MIDI library. Connect the center pin of the pot to GPIO 34.`
+    videoUrl: 'https://www.youtube.com/embed/wL5F9y_bL3o',
+    content: '# Building Your First MIDI Controller\n\nLearn how to turn potentiometers and buttons into a USB MIDI device.\n\n## Components\n- ESP32\n- 10k Potentiometers\n- Buttons\n\n## Wiring\n- Pot Center -> GPIO 34\n- Pot Left -> GND\n- Pot Right -> 3.3V\n- Button -> GPIO 14 & GND (Internal Pullup)\n'
   },
   {
     id: '102',
@@ -123,210 +73,58 @@ const INITIAL_TUTORIALS: Tutorial[] = [
     difficulty: 'Advanced',
     tags: ['C++', 'Audio', 'DSP'],
     isFeatured: true,
-    videoUrl: 'https://www.youtube.com/embed/GzK-4048Qn4', // Electro-Smith tutorial
-    content: `# Audio Synthesis on Daisy\n\nIntroduction to Digital Signal Processing (DSP) on the Daisy Seed platform.\n\n\`\`\`cpp\nvoid AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)\n{\n    for (size_t i = 0; i < size; i++)\n    {\n        out[0][i] = osc.Process();\n        out[1][i] = out[0][i];\n    }\n}\n\`\`\`\n`
-  },
-  {
-    id: '103',
-    title: 'TouchDesigner & Serial Comms',
-    difficulty: 'Intermediate',
-    tags: ['TouchDesigner', 'Interactive', 'Visuals'],
-    isFeatured: false,
-    content: `# Connecting Sensors to Visuals\n\nHow to read serial data from an Arduino/ESP32 inside TouchDesigner to control visual parameters in real-time.`
+    videoUrl: 'https://www.youtube.com/embed/GzK-4048Qn4',
+    content: '# Audio Synthesis on Daisy\n\nIntroduction to Digital Signal Processing (DSP) on the Daisy Seed platform.\n\n```cpp\nvoid AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)\n{\n    for (size_t i = 0; i < size; i++)\n    {\n        out[0][i] = osc.Process();\n        out[1][i] = out[0][i];\n    }\n}\n```\n'
   },
   {
     id: '104',
-    title: 'ESP32 WROOM + I2S Audio: Sine, Sequencer, and Drums',
+    title: 'ESP32 I2S Audio: Sine & Sequencer',
     difficulty: 'Intermediate',
     tags: ['ESP32', 'Audio', 'I2S', 'C++'],
     isFeatured: true,
-    videoUrl: 'https://www.youtube.com/embed/p570_UuL_uM', // Phil's Lab or generic I2S
-    content: `# ESP32 WROOM + I2S Audio
-
-Wire the ESP32 to an I2S DAC (e.g., MAX98357A):
-- BCLK: GPIO 26 → DAC BCLK
-- LRCK/WS: GPIO 25 → DAC L/RCLK
-- DIN: GPIO 22 → DAC DIN
-- GND → GND, VIN per module (3.3V/5V as allowed)
-
-## Sine Wave (44.1 kHz)
-\`\`\`cpp
-#include <Arduino.h>
-#include "driver/i2s.h"
-
-constexpr int I2S_BCK = 26;
-constexpr int I2S_WS  = 25;
-constexpr int I2S_DIN = 22;
-constexpr float SAMPLE_RATE = 44100.0f;
-
-void setupI2S() {
-  i2s_config_t cfg = {
-    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
-    .sample_rate = (int)SAMPLE_RATE,
-    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-    .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-    .communication_format = I2S_COMM_FORMAT_I2S,
-    .intr_alloc_flags = 0,
-    .dma_buf_count = 8,
-    .dma_buf_len = 256,
-    .use_apll = false,
-    .tx_desc_auto_clear = true
-  };
-  i2s_pin_config_t pins = {
-    .bck_io_num = I2S_BCK,
-    .ws_io_num = I2S_WS,
-    .data_out_num = I2S_DIN,
-    .data_in_num = I2S_PIN_NO_CHANGE
-  };
-  i2s_driver_install(I2S_NUM_0, &cfg, 0, nullptr);
-  i2s_set_pin(I2S_NUM_0, &pins);
-  i2s_set_sample_rates(I2S_NUM_0, SAMPLE_RATE);
-}
-
-void writeStereo(int16_t sample) {
-  uint32_t frame = (uint16_t)sample | ((uint32_t)(uint16_t)sample << 16);
-  size_t bytes_written;
-  i2s_write(I2S_NUM_0, &frame, sizeof(frame), &bytes_written, portMAX_DELAY);
-}
-
-void setup() { setupI2S(); }
-
-void loop() {
-  static float phase = 0.0f;
-  constexpr float freq = 440.0f;
-  float inc = 2.0f * PI * freq / SAMPLE_RATE;
-  int16_t s = (int16_t)(sin(phase) * 3000);
-  writeStereo(s);
-  phase += inc;
-  if (phase > 2 * PI) phase -= 2 * PI;
-}
-\`\`\`
-
-## 8-Step Sequencer (frequencies array)
-\`\`\`cpp
-void loop() {
-  static uint8_t step = 0;
-  static float phase = 0.0f;
-  constexpr float freqs[8] = {220, 247, 262, 294, 330, 349, 392, 440};
-  static unsigned long lastStep = 0;
-  const unsigned long stepMs = 200; // ~120 BPM
-
-  if (millis() - lastStep > stepMs) { step = (step + 1) % 8; lastStep = millis(); }
-  float inc = 2.0f * PI * freqs[step] / SAMPLE_RATE;
-  int16_t s = (int16_t)(sin(phase) * 4000);
-  writeStereo(s);
-  phase += inc;
-  if (phase > 2 * PI) phase -= 2 * PI;
-}
-\`\`\`
-
-## Simple Drums (kick + snare noise burst)
-\`\`\`cpp
-int16_t noiseSample() { return (int16_t)((esp_random() & 0xFFFF) - 32768) / 8; }
-
-void loop() {
-  static unsigned long lastKick = 0, lastSnare = 0;
-  const unsigned kickPeriod = 500, snarePeriod = 250;
-
-  if (millis() - lastKick > kickPeriod) lastKick = millis();
-  if (millis() - lastSnare > snarePeriod) lastSnare = millis();
-
-  float kickPhase = (millis() - lastKick) / 1000.0f;
-  float kickEnv = expf(-kickPhase * 8.0f);
-  float kick = sinf(2 * PI * 60 * kickPhase) * kickEnv * 6000;
-
-  float snarePhase = (millis() - lastSnare) / 1000.0f;
-  float snareEnv = expf(-snarePhase * 20.0f);
-  float snare = noiseSample() * snareEnv;
-
-  int16_t mixed = (int16_t)std::clamp(kick + snare, -30000.0f, 30000.0f);
-  writeStereo(mixed);
-}
-\`\`\`
-
-## Notes
-- Use Chrome for Web Serial/USB tools.
-- If audio is distorted, lower amplitude or sample rate.
-- Provide .bin files for students and flash via WebSerial tools if they don’t have toolchains.
- - Provide .bin files for students and flash via WebSerial tools if they don’t have toolchains.
-`
+    videoUrl: 'https://www.youtube.com/embed/p570_UuL_uM',
+    content: '# ESP32 I2S Audio\n\nUsing MAX98357A or PCM5102 DACs.\n\n## Wiring\n- BCLK: GPIO 26\n- LRCK: GPIO 25\n- DIN: GPIO 22\n'
   },
   {
-    id: '105',
-    title: 'Hackaday Sweet Sweet Oscillator',
+    id: '201',
+    title: 'Hardware Basics: Potentiometer & Button',
     difficulty: 'Beginner',
-    tags: ['Oscillator', 'DIY', 'Audio'],
+    tags: ['ESP32', 'Hardware', 'Basics'],
     isFeatured: false,
-    content: `# Sweet Sweet Oscillator (Hackaday)
-
-Reference: https://hackaday.com/?s=Sweet+Sweet+Oscillator
-
-What to build:
-- Simple audio-rate oscillator; breadboard-friendly.
-- Review the Hackaday schematic and parts list; swap values to tune pitch range.
-- Add output resistor/cap to tame amplitude for line-level inputs.
-
-Try:
-- Add a rate knob (potentiometer) inline with the timing resistor.
-- Put two in detuned parallel for richer tone.
-- Run through a fuzz (Bazz Fuss or Big Muff style) and then into a filter.
-
-Schematic (reference):
-![Oscillator](https://hackaday.com/wp-content/uploads/2012/11/osc.png)`
+    content: '# Potentiometer & Button\n\n## Reading a Potentiometer\nESP32 ADCs are 12-bit (0-4095).\n\n```cpp\nvoid setup() {\n  Serial.begin(115200);\n}\nvoid loop() {\n  int val = analogRead(34);\n  Serial.println(val);\n  delay(10);\n}\n```\n\n## Reading a Button\nUse internal pullups to avoid external resistors.\n\n```cpp\nvoid setup() {\n  pinMode(14, INPUT_PULLUP);\n}\nvoid loop() {\n  if (digitalRead(14) == LOW) {\n    Serial.println("Pressed!");\n  }\n}\n```\n'
   },
   {
-    id: '106',
-    title: 'Bazz Fuss (Home-Wrecker)',
-    difficulty: 'Beginner',
-    tags: ['Fuzz', 'Guitar', 'DIY'],
-    isFeatured: false,
-    content: `# Bazz Fuss
-
-Reference: http://home-wrecker.com/bazz.html
-
-Build notes:
-- One-transistor fuzz; great starter circuit.
-- Use a 100k log pot on output for volume; 10uF output cap to block DC.
-- Try different transistors (2N5088, 2N3904) and clipping diodes (LED vs 1N4148).
-- Keep leads short; mind polarity on electrolytics.
-
-Schematic:
-![Bazz Fuss](${resolvePath('/media/schematics/bazz-fuss.png')})`
-  },
-  {
-    id: '107',
-    title: 'Big Muff Analysis (Electrosmash)',
+    id: '202',
+    title: 'Using Rotary Encoders (EC11)',
     difficulty: 'Intermediate',
-    tags: ['Fuzz', 'Analysis', 'Guitar'],
-    isFeatured: true,
-    content: `# Big Muff Pi
-
-Reference: https://www.electrosmash.com/big-muff-pi-analysis
-
-Highlights:
-- Four gain stages with diode clipping, then a passive tone stack.
-- Swap clipping diodes for asymmetry; tweak the tone stack to shift mid scoop.
-- Keep input/output caps to taste: larger = more bass.
-- Socket parts for quick A/B while listening.
-
-Stages schematic:
-![Big Muff Stages](${resolvePath('/media/schematics/big-muff-stages.png')})`
+    tags: ['ESP32', 'Hardware', 'Encoder'],
+    isFeatured: false,
+    content: '# Rotary Encoders\n\nEncoders allow infinite rotation. Use the ESP32Encoder library for best performance.\n\n## Wiring\n- CLK -> GPIO 25\n- DT -> GPIO 26\n- SW -> GPIO 27\n\n## Code Example\n```cpp\n#include <ESP32Encoder.h>\nESP32Encoder encoder;\nvoid setup() {\n  encoder.attachHalfQuad(26, 25);\n  encoder.setCount(0);\n}\nvoid loop() {\n  Serial.println(encoder.getCount());\n}\n```\n'
   },
   {
-    id: '108',
-    title: 'LPB-1/LPB-2 Booster',
-    difficulty: 'Beginner',
-    tags: ['Booster', 'Guitar', 'DIY'],
+    id: '203',
+    title: 'OLED Display (SSD1306)',
+    difficulty: 'Intermediate',
+    tags: ['ESP32', 'Display', 'I2C'],
     isFeatured: false,
-    content: `# LPB-1/LPB-2 Booster
-
-Reference: https://www.electrosmash.com/lpb1
-
-Build notes:
-- Single-transistor booster; great to push amps or pedals.
-- Use a 100k log pot at output for level; 1uF–4.7uF output cap to taste.
-- Ensure correct transistor pinout; bias near half the supply for headroom.
-- Add input pulldown (1M) to reduce pops.`
+    content: '# 0.96" OLED Display (I2C)\n\nCommonly found as 4-pin modules (VCC, GND, SDA, SCL).\n\n## Wiring\n- SDA -> GPIO 21\n- SCL -> GPIO 22\n- VCC -> 3.3V\n\n## Library\nUse **Adafruit SSD1306** and **Adafruit GFX**.\n\n```cpp\n#include <Adafruit_SSD1306.h>\nAdafruit_SSD1306 display(128, 64, &Wire, -1);\nvoid setup() {\n  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);\n  display.clearDisplay();\n  display.setTextSize(1);\n  display.setTextColor(WHITE);\n  display.setCursor(0,0);\n  display.println("Hello World");\n  display.display();\n}\n```\n'
+  },
+  {
+    id: '204',
+    title: 'ESP32 WiFi & Web Server',
+    difficulty: 'Intermediate',
+    tags: ['ESP32', 'WiFi', 'IoT'],
+    isFeatured: false,
+    content: '# ESP32 WiFi Station\n\nConnect your ESP32 to the internet.\n\n```cpp\n#include <WiFi.h>\nconst char* ssid = "NetworkName";\nconst char* password = "Password";\n\nvoid setup() {\n  Serial.begin(115200);\n  WiFi.begin(ssid, password);\n  while (WiFi.status() != WL_CONNECTED) {\n    delay(500);\n    Serial.print(".");\n  }\n  Serial.println(WiFi.localIP());\n}\n```\n'
+  },
+  {
+    id: '205',
+    title: 'Bluetooth (Classic & BLE)',
+    difficulty: 'Advanced',
+    tags: ['ESP32', 'Bluetooth', 'Wireless'],
+    isFeatured: false,
+    content: '# Bluetooth Serial\n\nThe easiest way to talk to a phone/PC wirelessly.\n\n```cpp\n#include "BluetoothSerial.h"\nBluetoothSerial SerialBT;\n\nvoid setup() {\n  SerialBT.begin("ESP32_Device"); 
+}\n\nvoid loop() {\n  if (SerialBT.available()) {\n    Serial.write(SerialBT.read());\n  }\n}\n```\n'
   }
 ];
 
@@ -363,9 +161,6 @@ export const toggleFeaturedResource = (id: string): void => {
 };
 
 // --- Tutorials ---
-// For this mock, we aren't saving tutorials to local storage to keep it simple, 
-// but we will allow reading.
-
 export const getTutorials = (): Tutorial[] => {
   return INITIAL_TUTORIALS; 
 };
