@@ -737,6 +737,27 @@ const TutorialsPage = () => {
 };
 
 const ToolsPage = () => {
+  const schematics = [
+    {
+      title: 'Bazz Fuss',
+      description: 'Single-transistor fuzz; great beginner build.',
+      img: 'media/schematics/bazz-fuss.png',
+      link: 'http://home-wrecker.com/bazz.html'
+    },
+    {
+      title: 'Big Muff Pi (stages)',
+      description: 'Stage breakdown of the classic Big Muff.',
+      img: 'media/schematics/big-muff-stages.png',
+      link: 'https://www.electrosmash.com/big-muff-pi-analysis'
+    },
+    {
+      title: 'Daisy Kalimba Web Flasher',
+      description: 'Flash Daisy binaries via WebUSB (external tool).',
+      img: undefined,
+      link: 'https://willbearfruits.github.io/KarplusStrongMachine/web-flasher/index.html'
+    }
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       <div className="space-y-2">
@@ -758,6 +779,30 @@ const ToolsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <ResistorCalculator />
         <CapacitorCalculator />
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="text-2xl font-bold text-slate-800">Schematics & Flashers</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {schematics.map((item) => (
+            <a key={item.title} href={item.link} target="_blank" rel="noreferrer" className="group">
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all h-full">
+                {item.img ? (
+                  <div className="h-48 bg-slate-100 overflow-hidden flex items-center justify-center">
+                    <img src={item.img} alt={item.title} className="object-contain h-full w-full" />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-slate-100 flex items-center justify-center text-slate-400 text-sm">External tool</div>
+                )}
+                <div className="p-4 space-y-2">
+                  <div className="text-lg font-bold text-slate-800">{item.title}</div>
+                  <div className="text-sm text-slate-600">{item.description}</div>
+                  <div className="text-xs text-accent underline">Open</div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
       <div className="mt-8">
