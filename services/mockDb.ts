@@ -33,6 +33,56 @@ const INITIAL_RESOURCES: Resource[] = [
     isFeatured: true
   },
   {
+    id: '5',
+    title: 'Hackaday: Sweet Sweet Oscillator Sounds',
+    description: 'Hackaday project write-up with oscillator sounds and schematic reference.',
+    type: ResourceType.LINK,
+    url: 'https://hackaday.com/?s=Sweet+Sweet+Oscillator',
+    tags: ['Oscillator', 'DIY', 'Hackaday'],
+    dateAdded: '2025-11-29',
+    isFeatured: false
+  },
+  {
+    id: '6',
+    title: 'Home-Wrecker Bazz Fuss Schematic',
+    description: 'Classic single-transistor fuzz circuit notes and layout.',
+    type: ResourceType.LINK,
+    url: 'http://home-wrecker.com/bazz.html',
+    tags: ['Fuzz', 'Guitar', 'Schematic'],
+    dateAdded: '2025-11-29',
+    isFeatured: false
+  },
+  {
+    id: '7',
+    title: 'Electrosmash Big Muff Analysis',
+    description: 'In-depth analysis of the Big Muff Pi: schematic, stages, frequency plots.',
+    type: ResourceType.LINK,
+    url: 'https://www.electrosmash.com/big-muff-pi-analysis',
+    tags: ['Fuzz', 'Analysis', 'Schematic'],
+    dateAdded: '2025-11-29',
+    isFeatured: true
+  },
+  {
+    id: '8',
+    title: 'LPB-1/LPB-2 Booster Reference',
+    description: 'Simple booster schematic and walkthrough.',
+    type: ResourceType.LINK,
+    url: 'https://www.electrosmash.com/lpb1',
+    tags: ['Booster', 'Guitar', 'Schematic'],
+    dateAdded: '2025-11-29',
+    isFeatured: false
+  },
+  {
+    id: '9',
+    title: 'Daisy Kalimba Web Flasher',
+    description: 'Web flasher for Daisy (UD/artifacts) used in the Kalimba project.',
+    type: ResourceType.LINK,
+    url: 'https://willbearfruits.github.io/KarplusStrongMachine/web-flasher/index.html',
+    tags: ['Daisy', 'WebUSB', 'Flasher'],
+    dateAdded: '2025-11-29',
+    isFeatured: true
+  },
+  {
     id: '2',
     title: 'Pure Data (Pd) Vanilla',
     description: 'Visual programming language for multimedia and audio synthesis.',
@@ -192,7 +242,76 @@ void loop() {
 - Use Chrome for Web Serial/USB tools.
 - If audio is distorted, lower amplitude or sample rate.
 - Provide .bin files for students and flash via WebSerial tools if they don’t have toolchains.
+ - Provide .bin files for students and flash via WebSerial tools if they don’t have toolchains.
 `
+  },
+  {
+    id: '105',
+    title: 'Hackaday Sweet Sweet Oscillator',
+    difficulty: 'Beginner',
+    tags: ['Oscillator', 'DIY', 'Audio'],
+    isFeatured: false,
+    content: `# Sweet Sweet Oscillator (Hackaday)
+
+Reference: https://hackaday.com/?s=Sweet+Sweet+Oscillator
+
+What to build:
+- Simple audio-rate oscillator; breadboard-friendly.
+- Review the Hackaday schematic and parts list; swap values to tune pitch range.
+- Add output resistor/cap to tame amplitude for line-level inputs.
+
+Try:
+- Add a rate knob (potentiometer) inline with the timing resistor.
+- Put two in detuned parallel for richer tone.
+- Run through a fuzz (Bazz Fuss or Big Muff style) and then into a filter.`
+  },
+  {
+    id: '106',
+    title: 'Bazz Fuss (Home-Wrecker)',
+    difficulty: 'Beginner',
+    tags: ['Fuzz', 'Guitar', 'DIY'],
+    isFeatured: false,
+    content: `# Bazz Fuss
+
+Reference: http://home-wrecker.com/bazz.html
+
+Build notes:
+- One-transistor fuzz; great starter circuit.
+- Use a 100k log pot on output for volume; 10uF output cap to block DC.
+- Try different transistors (2N5088, 2N3904) and clipping diodes (LED vs 1N4148).
+- Keep leads short; mind polarity on electrolytics.`
+  },
+  {
+    id: '107',
+    title: 'Big Muff Analysis (Electrosmash)',
+    difficulty: 'Intermediate',
+    tags: ['Fuzz', 'Analysis', 'Guitar'],
+    isFeatured: true,
+    content: `# Big Muff Pi
+
+Reference: https://www.electrosmash.com/big-muff-pi-analysis
+
+Highlights:
+- Four gain stages with diode clipping, then a passive tone stack.
+- Swap clipping diodes for asymmetry; tweak the tone stack to shift mid scoop.
+- Keep input/output caps to taste: larger = more bass.
+- Socket parts for quick A/B while listening.`
+  },
+  {
+    id: '108',
+    title: 'LPB-1/LPB-2 Booster',
+    difficulty: 'Beginner',
+    tags: ['Booster', 'Guitar', 'DIY'],
+    isFeatured: false,
+    content: `# LPB-1/LPB-2 Booster
+
+Reference: https://www.electrosmash.com/lpb1
+
+Build notes:
+- Single-transistor booster; great to push amps or pedals.
+- Use a 100k log pot at output for level; 1uF–4.7uF output cap to taste.
+- Ensure correct transistor pinout; bias near half the supply for headroom.
+- Add input pulldown (1M) to reduce pops.`
   }
 ];
 

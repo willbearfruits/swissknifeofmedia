@@ -742,6 +742,17 @@ const ToolsPage = () => {
       <div className="space-y-2">
         <h2 className="text-3xl font-bold text-slate-800">Media Lab Workbench</h2>
         <p className="text-slate-600">Calculators for Filters/LEDs, Flashers for Daisy/ESP32, and Serial Monitors.</p>
+        <div className="text-sm text-slate-500">
+          Daisy flasher (Kalimba project):{' '}
+          <a
+            href="https://willbearfruits.github.io/KarplusStrongMachine/web-flasher/index.html"
+            className="text-accent underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Daisy Web Flasher
+          </a>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
