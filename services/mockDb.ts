@@ -23,6 +23,16 @@ const INITIAL_RESOURCES: Resource[] = [
     isFeatured: true
   },
   {
+    id: '4',
+    title: 'Electro-Smith Daisy Seed – Technical Overview (PDF)',
+    description: 'Hardware overview, pin maps, power domains, and peripheral specs for Daisy Seed.',
+    type: ResourceType.PDF,
+    url: 'media/electrosmith-daisy-seed-overview.pdf',
+    tags: ['Datasheet', 'Hardware', 'Daisy'],
+    dateAdded: '2025-11-29',
+    isFeatured: true
+  },
+  {
     id: '2',
     title: 'Pure Data (Pd) Vanilla',
     description: 'Visual programming language for multimedia and audio synthesis.',
