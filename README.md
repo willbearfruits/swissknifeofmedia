@@ -23,6 +23,14 @@ Toolkit for media artists and synth builders: resource library, tutorial workspa
 - Enable **Email/Password** sign-in in Firebase Console → Authentication.
 - Add your web app and copy the config into `.env.local` matching `.env.example`.
 - Optionally set `VITE_ADMIN_EMAILS` as a comma-separated allowlist for admin role.
+- For GitHub Pages builds, add the same values as repository secrets so the Actions workflow can inject them during `npm run build`:
+  - `VITE_FIREBASE_API_KEY`
+  - `VITE_FIREBASE_AUTH_DOMAIN`
+  - `VITE_FIREBASE_PROJECT_ID`
+  - `VITE_FIREBASE_STORAGE_BUCKET`
+  - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+  - `VITE_FIREBASE_APP_ID`
+  - optional: `VITE_ADMIN_EMAILS`, `VITE_GEMINI_API_KEY`
 
 ## Security Notes
 - Authentication now uses Firebase; passwords are never stored locally.
