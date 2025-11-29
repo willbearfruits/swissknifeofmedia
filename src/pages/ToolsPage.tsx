@@ -3,19 +3,22 @@ import { ResistorCalculator } from '../components/ResistorCalculator';
 import { CapacitorCalculator } from '../components/CapacitorCalculator';
 import { SerialMonitor } from '../components/SerialMonitor';
 import { ToneGenerator } from '../components/ToneGenerator';
-import { ExternalLink, Cpu, Zap } from 'lucide-react';
+import { TapTempo } from '../components/TapTempo';
+import { NoteConverter } from '../components/NoteConverter';
+import { ExternalLink, Cpu, Zap, Music } from 'lucide-react';
+import { resolvePath } from '../utils/pathUtils';
 
 const schematics = [
     {
       title: 'Bazz Fuss',
       description: 'Single-transistor fuzz; great beginner build.',
-      img: '/media/schematics/bazz-fuss.png',
+      img: resolvePath('/media/schematics/bazz-fuss.png'),
       link: 'http://home-wrecker.com/bazz.html'
     },
     {
       title: 'Big Muff Pi (stages)',
       description: 'Stage breakdown of the classic Big Muff.',
-      img: '/media/schematics/big-muff-stages.png',
+      img: resolvePath('/media/schematics/big-muff-stages.png'),
       link: 'https://www.electrosmash.com/big-muff-pi-analysis'
     },
     {
@@ -50,6 +53,17 @@ export const ToolsPage = () => {
         </div>
         <div className="col-span-1 xl:col-span-2">
              <ToneGenerator />
+        </div>
+      </div>
+
+      {/* Audio Utilities */}
+      <div className="space-y-4">
+        <h3 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Music className="w-6 h-6 text-accent" /> Audio Utilities
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <TapTempo />
+            <NoteConverter />
         </div>
       </div>
 

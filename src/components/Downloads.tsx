@@ -1,22 +1,23 @@
 import React from 'react';
 import { Download } from 'lucide-react';
 import { Button } from './Button';
+import { resolvePath } from '../utils/pathUtils';
 
 const downloads = [
   {
     title: 'Daisy Seed Technical Overview (PDF)',
     description: 'Hardware overview, pin maps, power domains, and peripheral specs for Daisy Seed.',
-    path: '/media/electrosmith-daisy-seed-overview.pdf'
+    path: resolvePath('/media/electrosmith-daisy-seed-overview.pdf')
   },
   {
     title: 'Bazz Fuss Schematic (PNG)',
     description: 'Single-transistor fuzz circuit reference.',
-    path: '/media/schematics/bazz-fuss.png'
+    path: resolvePath('/media/schematics/bazz-fuss.png')
   },
   {
     title: 'Big Muff Stages (PNG)',
     description: 'Breakdown of the Big Muff Pi stages.',
-    path: '/media/schematics/big-muff-stages.png'
+    path: resolvePath('/media/schematics/big-muff-stages.png')
   }
 ];
 

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.30.0",
+    "@tailwindcss/vite": "^4.1.17",
     "dompurify": "^3.3.0",
     "esptool-js": "^0.5.7",
     "firebase": "^12.6.0",
