@@ -29,7 +29,7 @@ const INITIAL_RESOURCES: Resource[] = [
     title: 'Electro-Smith Daisy Seed – Technical Overview (PDF)',
     description: 'Hardware overview, pin maps, power domains, and peripheral specs for Daisy Seed.',
     type: ResourceType.PDF,
-    url: './media/electrosmith-daisy-seed-overview.pdf',
+    url: '/media/electrosmith-daisy-seed-overview.pdf',
     tags: ['Datasheet', 'Hardware', 'Daisy'],
     dateAdded: '2025-11-29',
     isFeatured: true
@@ -287,7 +287,7 @@ Build notes:
 - Keep leads short; mind polarity on electrolytics.
 
 Schematic:
-![Bazz Fuss](media/schematics/bazz-fuss.png)`
+![Bazz Fuss](/media/schematics/bazz-fuss.png)`
   },
   {
     id: '107',
@@ -306,7 +306,7 @@ Highlights:
 - Socket parts for quick A/B while listening.
 
 Stages schematic:
-![Big Muff Stages](media/schematics/big-muff-stages.png)`
+![Big Muff Stages](/media/schematics/big-muff-stages.png)`
   },
   {
     id: '108',

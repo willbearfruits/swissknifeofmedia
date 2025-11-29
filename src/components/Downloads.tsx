@@ -6,17 +6,17 @@ const downloads = [
   {
     title: 'Daisy Seed Technical Overview (PDF)',
     description: 'Hardware overview, pin maps, power domains, and peripheral specs for Daisy Seed.',
-    path: './media/electrosmith-daisy-seed-overview.pdf'
+    path: '/media/electrosmith-daisy-seed-overview.pdf'
   },
   {
     title: 'Bazz Fuss Schematic (PNG)',
     description: 'Single-transistor fuzz circuit reference.',
-    path: './media/schematics/bazz-fuss.png'
+    path: '/media/schematics/bazz-fuss.png'
   },
   {
     title: 'Big Muff Stages (PNG)',
     description: 'Breakdown of the Big Muff Pi stages.',
-    path: './media/schematics/big-muff-stages.png'
+    path: '/media/schematics/big-muff-stages.png'
   }
 ];
 
