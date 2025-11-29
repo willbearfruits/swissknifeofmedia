@@ -32,6 +32,11 @@ Toolkit for media artists and synth builders: resource library, tutorial workspa
   - `VITE_FIREBASE_APP_ID`
   - optional: `VITE_ADMIN_EMAILS`, `VITE_GEMINI_API_KEY`
 
+## Classroom PIN mode (simpler, no external setup)
+- If Firebase env vars are missing, the app falls back to a PIN gate: set `VITE_STUDENT_PIN` and `VITE_ADMIN_PIN` (defaults are empty).
+- Share the student PIN with the class; keep the admin PIN private for instructor access.
+- This is convenient for workshops but not strong security—use Firebase for real auth.
+
 ## Security Notes
 - Authentication now uses Firebase; passwords are never stored locally.
 - Admin role defaults to emails containing “admin” unless you specify `VITE_ADMIN_EMAILS`.

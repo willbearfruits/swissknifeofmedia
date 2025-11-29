@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, FirebaseApp } from 'firebase/app';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   User as FirebaseUser,
+  Auth
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -17,14 +18,31 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-if (Object.values(firebaseConfig).some((value) => !value)) {
-  throw new Error('Missing Firebase environment configuration. Check your .env.local values.');
+const hasConfig = Object.values(firebaseConfig).every(Boolean);
+
+let app: FirebaseApp | null = null;
+let firebaseAuth: Auth | null = null;
+
+if (hasConfig) {
+  app = initializeApp(firebaseConfig);
+  firebaseAuth = getAuth(app);
 }
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const isFirebaseEnabled = !!firebaseAuth;
 
-export const onAuthChange = (cb: (user: FirebaseUser | null) => void) => onAuthStateChanged(auth, cb);
-export const loginWithEmail = (email: string, password: string) => signInWithEmailAndPassword(auth, email, password);
-export const registerWithEmail = (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password);
-export const logout = () => signOut(auth);
+export const onAuthChange = (cb: (user: FirebaseUser | null) => void) => {
+  if (!firebaseAuth) return () => {};
+  return onAuthStateChanged(firebaseAuth, cb);
+};
+export const loginWithEmail = (email: string, password: string) => {
+  if (!firebaseAuth) return Promise.reject(new Error('Firebase auth not configured'));
+  return signInWithEmailAndPassword(firebaseAuth, email, password);
+};
+export const registerWithEmail = (email: string, password: string) => {
+  if (!firebaseAuth) return Promise.reject(new Error('Firebase auth not configured'));
+  return createUserWithEmailAndPassword(firebaseAuth, email, password);
+};
+export const logout = () => {
+  if (!firebaseAuth) return Promise.resolve();
+  return signOut(firebaseAuth);
+};
