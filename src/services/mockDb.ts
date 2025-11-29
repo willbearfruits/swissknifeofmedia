@@ -123,12 +123,9 @@ const INITIAL_TUTORIALS: Tutorial[] = [
     difficulty: 'Advanced',
     tags: ['ESP32', 'Bluetooth', 'Wireless'],
     isFeatured: false,
-    content: '# Bluetooth Serial\n\nThe easiest way to talk to a phone/PC wirelessly.\n\n```cpp\n#include "BluetoothSerial.h"\nBluetoothSerial SerialBT;\n\nvoid setup() {\n  SerialBT.begin("ESP32_Device"); 
-}\n\nvoid loop() {\n  if (SerialBT.available()) {\n    Serial.write(SerialBT.read());\n  }\n}\n```\n'
+    content: '# Bluetooth Serial\n\nThe easiest way to talk to a phone/PC wirelessly.\n\n```cpp\n#include "BluetoothSerial.h"\nBluetoothSerial SerialBT;\n\nvoid setup() {\n  SerialBT.begin("ESP32_Device");\n}\n\nvoid loop() {\n  if (SerialBT.available()) {\n    Serial.write(SerialBT.read());\n  }\n}\n```\n'
   }
 ];
-
-// --- Resources ---
 
 export const getResources = (): Resource[] => {
   const stored = localStorage.getItem(RESOURCES_KEY);
@@ -160,7 +157,6 @@ export const toggleFeaturedResource = (id: string): void => {
   localStorage.setItem(RESOURCES_KEY, JSON.stringify(updated));
 };
 
-// --- Tutorials ---
 export const getTutorials = (): Tutorial[] => {
   return INITIAL_TUTORIALS; 
 };
