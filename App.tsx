@@ -1,13 +1,44 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import { HashRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { Home, BookOpen, Layers, Terminal, Lock, User as UserIcon, LogOut, Upload, Settings, Zap, Star, PenTool } from 'lucide-react';
+import { Home, BookOpen, Layers, Terminal, LogOut, Upload, Settings, Zap, Star, PenTool } from 'lucide-react';
 import { Button } from './components/Button';
 import { SerialMonitor } from './components/SerialMonitor';
 import { ResistorCalculator } from './components/ResistorCalculator';
 import { CapacitorCalculator } from './components/CapacitorCalculator';
-import { getResources, addResource, deleteResource, getTutorials, loginUser, registerUser, updateUser, toggleFeaturedResource } from './services/mockDb';
+import { getResources, addResource, deleteResource, getTutorials, toggleFeaturedResource } from './services/mockDb';
 import { Resource, ResourceType, Tutorial, User, UserSettings } from './types';
 import { generateTutorResponse } from './services/geminiService';
+import { loginWithEmail, registerWithEmail, logout as firebaseLogout, onAuthChange } from './services/firebase';
+
+const adminAllowlist = (import.meta.env.VITE_ADMIN_EMAILS || '')
+  .split(',')
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean);
+
+const computeRole = (email?: string): 'ADMIN' | 'STUDENT' => {
+  if (!email) return 'STUDENT';
+  const normalized = email.toLowerCase();
+  if (adminAllowlist.includes(normalized) || normalized.includes('admin')) {
+    return 'ADMIN';
+  }
+  return 'STUDENT';
+};
+
+const userSettingsKey = (userId: string) => `eduhub_settings_${userId}`;
+
+const getUserSettings = (userId: string): UserSettings => {
+  try {
+    const stored = localStorage.getItem(userSettingsKey(userId));
+    if (stored) return JSON.parse(stored) as UserSettings;
+  } catch (error) {
+    console.error('Failed to parse settings', error);
+  }
+  return { aiEnabled: false };
+};
+
+const saveUserSettings = (userId: string, settings: UserSettings) => {
+  localStorage.setItem(userSettingsKey(userId), JSON.stringify(settings));
+};
 
 // --- Auth Context ---
 
@@ -24,33 +55,36 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem('eduhub_current_user');
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch (error) {
-        console.error('Failed to parse user from storage', error);
-        localStorage.removeItem('eduhub_current_user');
+    const unsub = onAuthChange((firebaseUser) => {
+      if (!firebaseUser) {
+        setUser(null);
+        return;
       }
-    }
+      const role = computeRole(firebaseUser.email);
+      const settings = getUserSettings(firebaseUser.uid);
+      setUser({
+        id: firebaseUser.uid,
+        email: firebaseUser.email || '',
+        name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+        role,
+        settings,
+      });
+    });
+    return () => unsub();
   }, []);
 
-  const login = (u: User) => {
-    setUser(u);
-    localStorage.setItem('eduhub_current_user', JSON.stringify(u));
-  };
+  const login = (u: User) => setUser(u);
 
   const logout = () => {
+    firebaseLogout();
     setUser(null);
-    localStorage.removeItem('eduhub_current_user');
   };
 
   const updateSettings = (s: UserSettings) => {
     if (user) {
       const updatedUser = { ...user, settings: s };
       setUser(updatedUser);
-      updateUser(updatedUser);
-      localStorage.setItem('eduhub_current_user', JSON.stringify(updatedUser));
+      saveUserSettings(user.id, s);
     }
   };
 
@@ -150,25 +184,35 @@ const AuthPage = () => {
     try {
       setIsSubmitting(true);
       if (isLogin) {
-        const u = await loginUser(trimmedEmail, password);
-        if (u) {
-          login(u);
-        } else {
-          setError('Invalid credentials');
-        }
+        const cred = await loginWithEmail(trimmedEmail, password);
+        const fbUser = cred.user;
+        const settings = getUserSettings(fbUser.uid);
+        login({
+          id: fbUser.uid,
+          email: fbUser.email || trimmedEmail,
+          name: fbUser.displayName || trimmedEmail.split('@')[0],
+          role: computeRole(fbUser.email || trimmedEmail),
+          settings,
+        });
       } else {
-        const u = await registerUser(trimmedEmail, password);
-        if (u) {
-          login(u);
-          setPassword('');
-          setEmail('');
-        } else {
-          setError('User already exists');
-        }
+        const cred = await registerWithEmail(trimmedEmail, password);
+        const fbUser = cred.user;
+        const settings: UserSettings = { aiEnabled: false };
+        saveUserSettings(fbUser.uid, settings);
+        login({
+          id: fbUser.uid,
+          email: fbUser.email || trimmedEmail,
+          name: fbUser.displayName || trimmedEmail.split('@')[0],
+          role: computeRole(fbUser.email || trimmedEmail),
+          settings,
+        });
+        setPassword('');
+        setEmail('');
       }
     } catch (err) {
       console.error('Auth error', err);
-      setError('Something went wrong. Please try again.');
+      const message = (err as Error).message || 'Something went wrong. Please try again.';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

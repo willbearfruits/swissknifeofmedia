@@ -1,11 +1,6 @@
-import { Resource, ResourceType, User, Tutorial } from '../types';
+import { Resource, ResourceType, Tutorial } from '../types';
 
 const RESOURCES_KEY = 'eduhub_resources';
-const USERS_KEY = 'eduhub_users';
-const CURRENT_USER_KEY = 'eduhub_current_user';
-
-type StoredUser = User & { passwordHash?: string; password?: string };
-
 const parseJSON = <T>(value: string | null, fallback: T): T => {
   if (!value) return fallback;
   try {
@@ -14,14 +9,6 @@ const parseJSON = <T>(value: string | null, fallback: T): T => {
     console.error('Failed to parse localStorage payload', error);
     return fallback;
   }
-};
-
-const hashPassword = async (password: string): Promise<string> => {
-  const encoded = new TextEncoder().encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
 };
 
 const INITIAL_RESOURCES: Resource[] = [
@@ -119,53 +106,4 @@ export const toggleFeaturedResource = (id: string): void => {
 
 export const getTutorials = (): Tutorial[] => {
   return INITIAL_TUTORIALS; 
-};
-
-// --- Users & Auth ---
-
-const loadUsers = (): StoredUser[] => {
-  return parseJSON<StoredUser[]>(localStorage.getItem(USERS_KEY), []);
-};
-
-const saveUsers = (users: StoredUser[]) => {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-};
-
-export const registerUser = async (email: string, password: string): Promise<User | null> => {
-  const users = loadUsers();
-  
-  if (users.find((u) => u.email === email)) return null;
-
-  const passwordHash = await hashPassword(password);
-
-  const newUser: User = {
-    id: Date.now().toString(),
-    email,
-    name: email.split('@')[0],
-    role: email.includes('admin') ? 'ADMIN' : 'STUDENT', // Auto-admin for demo if email has 'admin'
-    settings: { aiEnabled: false }
-  };
-
-  // Store hashed credentials
-  users.push({ ...newUser, passwordHash }); 
-  saveUsers(users);
-  return newUser;
-};
-
-export const loginUser = async (email: string, password: string): Promise<User | null> => {
-  const users = loadUsers();
-  const passwordHash = await hashPassword(password);
-  const user = users.find((u) => u.email === email && (u.passwordHash === passwordHash || u.password === password));
-  
-  if (user) {
-    const { password, passwordHash: _, ...cleanUser } = user;
-    return cleanUser as User;
-  }
-  return null;
-};
-
-export const updateUser = (user: User): void => {
-  const users = loadUsers();
-  const updated = users.map((u) => u.id === user.id ? { ...u, ...user } : u);
-  saveUsers(updated);
 };

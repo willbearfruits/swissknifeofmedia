@@ -8,6 +8,7 @@ Toolkit for media artists and synth builders: resource library, tutorial workspa
 
 ## Run Locally
 - Prerequisites: Node.js 20+
+- Copy `.env.example` to `.env.local` (or `.env`) and fill your Firebase config.
 - Install: `npm install`
 - Develop: `npm run dev`
 - Build: `npm run build`
@@ -17,10 +18,17 @@ Toolkit for media artists and synth builders: resource library, tutorial workspa
 - Provide your Gemini API key in the app via **Settings → Gemini API Key** (stored locally).
 - Optional for local-only testing: set `VITE_GEMINI_API_KEY` in an environment file, but do not commit secrets or use this for public builds.
 
+## Firebase Auth (secure login)
+- Create a Firebase project (no paid plan required for basic email/password auth).
+- Enable **Email/Password** sign-in in Firebase Console → Authentication.
+- Add your web app and copy the config into `.env.local` matching `.env.example`.
+- Optionally set `VITE_ADMIN_EMAILS` as a comma-separated allowlist for admin role.
+
 ## Security Notes
-- Auth is demo-only: credentials are hashed before storing in `localStorage`, but there is no backend—do not reuse production passwords.
-- Clearing browser storage resets stored users/resources.
-- Secrets are not bundled unless you explicitly set `VITE_GEMINI_API_KEY`.
+- Authentication now uses Firebase; passwords are never stored locally.
+- Admin role defaults to emails containing “admin” unless you specify `VITE_ADMIN_EMAILS`.
+- Resource/tutorial data still lives in `localStorage`; clearing browser storage resets that demo data.
+- Avoid bundling secrets; only set `VITE_GEMINI_API_KEY` for local testing.
 
 ## Deploy to GitHub Pages
 - Push to `main`; `.github/workflows/deploy.yml` builds and publishes `dist` to the `gh-pages` branch.
