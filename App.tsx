@@ -15,8 +15,8 @@ const adminAllowlist = (import.meta.env.VITE_ADMIN_EMAILS || '')
   .map(e => e.trim().toLowerCase())
   .filter(Boolean);
 
-const studentPin = (import.meta.env.VITE_STUDENT_PIN || '').trim();
-const adminPin = (import.meta.env.VITE_ADMIN_PIN || '').trim();
+const studentPin = (import.meta.env.VITE_STUDENT_PIN || '2025').trim();
+const adminPin = (import.meta.env.VITE_ADMIN_PIN || '1984').trim();
 const authMode: 'firebase' | 'pin' = isFirebaseEnabled ? 'firebase' : 'pin';
 
 const computeRole = (email?: string): 'ADMIN' | 'STUDENT' => {
