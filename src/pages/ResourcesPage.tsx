@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Upload, Star, Trash2, Download, Edit, FileText, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { Upload, Star, Trash2, Download, Edit, FileText, Link as LinkIcon, FolderOpen } from 'lucide-react';
 import { Button } from '../components/Button';
 import { getResources, addResource, deleteResource, toggleFeaturedResource, updateResource } from '../services/mockDb';
-import { uploadFile } from '../services/storageService';
 import { Resource, ResourceType } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { resolvePath } from '../utils/pathUtils';
 
 export const ResourcesPage = () => {
   const { user } = useAuth();
@@ -20,10 +20,8 @@ export const ResourcesPage = () => {
   const [url, setUrl] = useState('');
   const [desc, setDesc] = useState('');
   
-  // Upload State
+  // Input Mode State
   const [inputMode, setInputMode] = useState<'url' | 'file'>('url');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
 
   const filtered = resources.filter(r => 
     r.title.toLowerCase().includes(filter.toLowerCase()) || 
@@ -49,7 +47,6 @@ export const ResourcesPage = () => {
     setUrl('');
     setDesc('');
     setInputMode('url');
-    setSelectedFile(null);
     setShowModal(true);
   };
 
@@ -59,21 +56,35 @@ export const ResourcesPage = () => {
     setType(res.type);
     setUrl(res.url);
     setDesc(res.description);
-    setInputMode('url'); // Default to URL for editing, unless we add file replacement later
-    setSelectedFile(null);
+    setInputMode(res.url.startsWith('/media/') ? 'file' : 'url');
     setShowModal(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setSelectedFile(file);
       
-      // Auto-detect details if creating new
+      // Auto-fill details
+      const fileName = file.name;
+      // Use resolvePath if you want to preview, but for storage we keep the relative path '/media/...'
+      // Actually, let's store the clean relative path. The rendering component uses resolvePath if needed, 
+      // OR we store it resolved? 
+      // Looking at mockDb.ts, it stores `resolvePath('/media/...')`.
+      // But resolvePath depends on import.meta.env.BASE_URL. 
+      // If we store it resolved, it might double-resolve if we aren't careful.
+      // mockDb.ts usage: `url: resolvePath('/media/electrosmith-daisy-seed-overview.pdf')`
+      // So we should store it as `/media/filename` and let the consumer resolve it? 
+      // Wait, mockDb stores the *result* of resolvePath. 
+      // Let's just store `/media/${fileName}` and let the consuming link handle it, 
+      // OR wrap it with resolvePath here. 
+      // Let's stick to the pattern: store the *final* URL.
+      
+      setUrl(resolvePath(`/media/${fileName}`));
+
       if (!editingId) {
-        if (!title) setTitle(file.name.split('.')[0].replace(/[_-]/g, ' '));
+        if (!title) setTitle(fileName.split('.')[0].replace(/[_-]/g, ' '));
         
-        const ext = file.name.split('.').pop()?.toLowerCase();
+        const ext = fileName.split('.').pop()?.toLowerCase();
         if (ext === 'pdf') setType(ResourceType.PDF);
         else if (['c', 'cpp', 'h', 'py', 'js', 'ts', 'json'].includes(ext || '')) setType(ResourceType.CODE);
         else setType(ResourceType.FILE);
@@ -81,50 +92,35 @@ export const ResourcesPage = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setUploading(true);
-
-    try {
-      let finalUrl = url;
-
-      if (inputMode === 'file' && selectedFile) {
-        // Upload to Firebase
-        finalUrl = await uploadFile(selectedFile, 'resources');
-      }
-
-      if (editingId) {
-        // Update existing
-        updateResource(editingId, {
-          title,
-          type,
-          url: finalUrl,
-          description: desc
-        });
-      } else {
-        // Create new
-        const newRes: Resource = {
-          id: Date.now().toString(),
-          title,
-          type,
-          url: finalUrl,
-          description: desc,
-          tags: ['New'],
-          dateAdded: new Date().toISOString().split('T')[0],
-          isFeatured: false
-        };
-        addResource(newRes);
-      }
-
-      setResources(getResources());
-      setShowModal(false);
-      setTitle(''); setUrl(''); setDesc(''); setEditingId(null); setSelectedFile(null);
-    } catch (error) {
-      console.error("Error saving resource:", error);
-      alert("Failed to save resource. See console for details.");
-    } finally {
-      setUploading(false);
+    
+    if (editingId) {
+      // Update existing
+      updateResource(editingId, {
+        title,
+        type,
+        url,
+        description: desc
+      });
+    } else {
+      // Create new
+      const newRes: Resource = {
+        id: Date.now().toString(),
+        title,
+        type,
+        url,
+        description: desc,
+        tags: ['New'],
+        dateAdded: new Date().toISOString().split('T')[0],
+        isFeatured: false
+      };
+      addResource(newRes);
     }
+
+    setResources(getResources());
+    setShowModal(false);
+    setTitle(''); setUrl(''); setDesc(''); setEditingId(null);
   };
 
   return (
@@ -224,7 +220,7 @@ export const ResourcesPage = () => {
                     onClick={() => setInputMode('file')}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all ${inputMode === 'file' ? 'bg-white shadow text-primary' : 'text-slate-500 hover:text-slate-700'}`}
                   >
-                    <Upload className="w-4 h-4" /> Upload File
+                    <FolderOpen className="w-4 h-4" /> Local File
                   </button>
                 </div>
                 
@@ -235,14 +231,19 @@ export const ResourcesPage = () => {
                     <input 
                       type="file" 
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      onChange={handleFileChange}
+                      onChange={handleFileSelect}
                     />
                     <div className="pointer-events-none">
-                      <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                      <p className="text-sm text-slate-600">{selectedFile ? selectedFile.name : 'Click to upload or drag file'}</p>
-                      <p className="text-xs text-slate-400 mt-1">PDF, ZIP, Code, Images</p>
+                      <FolderOpen className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                      <p className="text-sm text-slate-600">Select file to link</p>
+                      <p className="text-xs text-slate-400 mt-1">We'll use the filename to generate the link.</p>
                     </div>
                   </div>
+                )}
+                {inputMode === 'file' && url && (
+                    <div className="mt-2 text-xs text-orange-600 bg-orange-50 p-2 rounded border border-orange-100">
+                        <strong>Note:</strong> Ensure <code>{url.split('/').pop()}</code> is committed to <code>public/media/</code> in your repository.
+                    </div>
                 )}
               </div>
 
@@ -259,10 +260,8 @@ export const ResourcesPage = () => {
               </div>
 
               <div className="flex justify-end gap-2 mt-6">
-                <Button type="button" variant="ghost" onClick={() => setShowModal(false)} disabled={uploading}>Cancel</Button>
-                <Button type="submit" disabled={uploading}>
-                  {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...</> : (editingId ? 'Update Resource' : 'Save Resource')}
-                </Button>
+                <Button type="button" variant="ghost" onClick={() => setShowModal(false)}>Cancel</Button>
+                <Button type="submit">{editingId ? 'Update Resource' : 'Save Resource'}</Button>
               </div>
             </form>
           </div>

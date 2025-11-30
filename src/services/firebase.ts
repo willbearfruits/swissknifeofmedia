@@ -8,7 +8,6 @@ import {
   User as FirebaseUser,
   Auth
 } from 'firebase/auth';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -23,16 +22,13 @@ const hasConfig = Object.values(firebaseConfig).every(Boolean);
 
 let app: FirebaseApp | null = null;
 let firebaseAuth: Auth | null = null;
-let firebaseStorage: FirebaseStorage | null = null;
 
 if (hasConfig) {
   app = initializeApp(firebaseConfig);
   firebaseAuth = getAuth(app);
-  firebaseStorage = getStorage(app);
 }
 
 export const isFirebaseEnabled = !!firebaseAuth;
-export { firebaseStorage };
 
 export const onAuthChange = (cb: (user: FirebaseUser | null) => void) => {
   if (!firebaseAuth) return () => {};
