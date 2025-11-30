@@ -86,6 +86,7 @@ export const ResourcesPage = () => {
         const ext = fileName.split('.').pop()?.toLowerCase();
         if (ext === 'pdf') setType(ResourceType.PDF);
         else if (['c', 'cpp', 'h', 'py', 'js', 'ts', 'json'].includes(ext || '')) setType(ResourceType.CODE);
+        else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '')) setType(ResourceType.IMAGE);
         else setType(ResourceType.FILE);
       }
     }

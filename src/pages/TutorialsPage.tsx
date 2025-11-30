@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, BookOpen, ChevronRight, MessageSquare, Plus, Edit, Trash2, RefreshCw, Download, FileText, Link as LinkIcon, CheckSquare, Square, ArrowLeft } from 'lucide-react';
+import { Zap, BookOpen, ChevronRight, MessageSquare, Plus, Edit, Trash2, RefreshCw, Download, FileText, Link as LinkIcon, CheckSquare, Square, ArrowLeft, Image as ImageIcon, X } from 'lucide-react';
 import { Button } from '../components/Button';
 import { getTutorials, addTutorial, updateTutorial, deleteTutorial, getResources } from '../services/mockDb';
-import { Tutorial, Resource } from '../types';
+import { Tutorial, Resource, ResourceType } from '../types';
 import { generateTutorResponse } from '../services/geminiService';
 import { useAuth } from '../context/AuthContext';
 import { marked } from 'marked';
@@ -33,6 +33,7 @@ export const TutorialsPage = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [content, setContent] = useState('');
   const [relatedIds, setRelatedIds] = useState<string[]>([]);
+  const [showImagePicker, setShowImagePicker] = useState(false);
 
   useEffect(() => {
     setTutorials(getTutorials());
@@ -73,6 +74,7 @@ export const TutorialsPage = () => {
     setVideoUrl('');
     setContent('# New Tutorial\n\nStart writing here...');
     setRelatedIds([]);
+    setShowImagePicker(false);
     setShowModal(true);
   };
 
@@ -84,6 +86,7 @@ export const TutorialsPage = () => {
     setVideoUrl(tut.videoUrl || '');
     setContent(tut.content);
     setRelatedIds(tut.relatedResourceIds || []);
+    setShowImagePicker(false);
     setShowModal(true);
   };
 
@@ -91,6 +94,12 @@ export const TutorialsPage = () => {
     setRelatedIds(prev => 
       prev.includes(resId) ? prev.filter(id => id !== resId) : [...prev, resId]
     );
+  };
+
+  const insertImage = (url: string, alt: string) => {
+    const imageMarkdown = `\n![${alt}](${url})\n`;
+    setContent(prev => prev + imageMarkdown);
+    setShowImagePicker(false);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -155,6 +164,8 @@ export const TutorialsPage = () => {
       }
     }
   };
+
+  const imageResources = resources.filter(r => r.type === ResourceType.IMAGE);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 h-[calc(100vh-80px)] flex gap-6 animate-fade-in relative">
@@ -241,7 +252,7 @@ export const TutorialsPage = () => {
               )}
 
               {/* Markdown Content */}
-              <div className="prose max-w-none prose-slate prose-pre:bg-slate-800 prose-pre:text-white prose-pre:rounded-xl prose-headings:text-slate-800">
+              <div className="prose max-w-none prose-slate prose-pre:bg-slate-800 prose-pre:text-white prose-pre:rounded-xl prose-headings:text-slate-800 prose-img:rounded-xl prose-img:shadow-lg">
                 {(() => {
                   const html = DOMPurify.sanitize(marked.parse(selectedTutorial.content) as string);
                   return (
@@ -385,7 +396,62 @@ export const TutorialsPage = () => {
             </div>
 
             <div className="flex flex-col h-full">
-                <label className="block text-sm font-medium mb-1 text-slate-700">Content (Markdown)</label>
+                <div className="flex items-center justify-between mb-1">
+                    <label className="block text-sm font-medium text-slate-700">Content (Markdown)</label>
+                    <button 
+                        type="button"
+                        onClick={() => setShowImagePicker(!showImagePicker)}
+                        className="text-xs flex items-center gap-1 text-primary hover:text-primaryLight font-medium bg-red-50 px-2 py-1 rounded"
+                    >
+                        <ImageIcon className="w-3 h-3" /> Insert Image
+                    </button>
+                </div>
+                
+                {/* Image Picker Popover */}
+                {showImagePicker && (
+                    <div className="mb-2 bg-white border border-slate-200 rounded-lg shadow-sm p-2 z-10">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-bold text-slate-500">Select from Library</span>
+                            <button onClick={() => setShowImagePicker(false)}><X className="w-3 h-3 text-slate-400" /></button>
+                        </div>
+                        <div className="flex gap-2 overflow-x-auto pb-2">
+                            {imageResources.length > 0 ? imageResources.map(img => (
+                                <button 
+                                    key={img.id} 
+                                    onClick={() => insertImage(img.url, img.title)}
+                                    className="shrink-0 border border-slate-100 rounded hover:border-accent"
+                                    title={img.title}
+                                >
+                                    {/* We can try to show preview if URL is image, else just icon */}
+                                    <div className="w-16 h-16 bg-slate-50 flex items-center justify-center text-xs overflow-hidden">
+                                        {img.url.startsWith('/') ? (
+                                            <img src={resolvePath(img.url)} alt={img.title} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <ImageIcon className="w-6 h-6 text-slate-300" />
+                                        )}
+                                    </div>
+                                    <div className="text-[10px] w-16 truncate px-1">{img.title}</div>
+                                </button>
+                            )) : (
+                                <div className="text-xs text-slate-400 italic p-2">No images in Media Library.</div>
+                            )}
+                        </div>
+                        <div className="border-t border-slate-100 pt-2 mt-1">
+                            <input 
+                                type="text" 
+                                placeholder="Or paste URL..." 
+                                className="w-full text-xs p-1 border border-slate-200 rounded"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        insertImage(e.currentTarget.value, 'Image');
+                                        e.currentTarget.value = '';
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 <textarea required className="w-full flex-1 border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-accent outline-none font-mono text-sm" value={content} onChange={e => setContent(e.target.value)} />
                 
                 <div className="flex justify-end gap-2 mt-4">

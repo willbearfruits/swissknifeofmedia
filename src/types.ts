@@ -2,7 +2,8 @@ export enum ResourceType {
   LINK = 'LINK',
   FILE = 'FILE',
   PDF = 'PDF',
-  CODE = 'CODE'
+  CODE = 'CODE',
+  IMAGE = 'IMAGE'
 }
 
 export interface Resource {
