@@ -3,7 +3,7 @@ import { resolvePath } from '../utils/pathUtils';
 
 const RESOURCES_KEY = 'eduhub_resources';
 const RESOURCES_VERSION_KEY = 'eduhub_resources_version';
-const RESOURCES_VERSION = 'v4'; 
+const RESOURCES_VERSION = 'v5'; 
 const parseJSON = <T>(value: string | null, fallback: T): T => {
   if (!value) return fallback;
   try {
@@ -15,6 +15,16 @@ const parseJSON = <T>(value: string | null, fallback: T): T => {
 };
 
 const INITIAL_RESOURCES: Resource[] = [
+  {
+    id: '10',
+    title: 'ESP32 I2S Sine Example Code (Zip)',
+    description: 'Complete Arduino project for generating a sine wave on ESP32 using I2S and MAX98357A.',
+    type: ResourceType.CODE,
+    url: resolvePath('/media/ESP32_I2S_Sine.zip'),
+    tags: ['ESP32', 'I2S', 'Audio', 'Arduino'],
+    dateAdded: '2025-11-30',
+    isFeatured: true
+  },
   {
     id: '1',
     title: 'Electro-Smith Daisy Pinout',
@@ -58,6 +68,14 @@ const INITIAL_RESOURCES: Resource[] = [
 ];
 
 const INITIAL_TUTORIALS: Tutorial[] = [
+  {
+    id: '105',
+    title: 'ESP32 I2S Audio: Sine Wave Generator',
+    difficulty: 'Intermediate',
+    tags: ['ESP32', 'Audio', 'I2S', 'Code'],
+    isFeatured: true,
+    content: '# ESP32 I2S Sine Wave (MAX98357A)\\n\\nSimple ESP32 DevKit example that outputs a **440 Hz sine wave** over I2S\\nto a MAX98357A I2S DAC/amp module.\\n\\n## Wiring\\n\\n**ESP32 DevKit ↔ MAX98357A**\\n\\n- `GPIO26` → `BCLK` (or `BCK`)\\n- `GPIO25` → `LRC` / `LRCLK` / `WS`\\n- `GPIO22` → `DIN`\\n- `5V`     → `VIN`\\n- `GND`    → `GND`\\n\\nSpeaker:\\n\\n- `SPK+` → speaker +\\n- `SPK-` → speaker −\\n\\nUse a 4–8 Ω speaker; *do not* connect either speaker terminal to GND.\\n\\n## How to use\\n\\n1. Open `ESP32_I2S_Sine.ino` in Arduino IDE (folder name must match).\\n2. Select your ESP32 board (e.g. **ESP32 Dev Module**).\\n3. Flash the sketch.\\n4. You should hear a 440 Hz continuous tone.\\n\\n## Code snippets\\n\\n### I2S pin config\\n\\n```cpp\\n#define I2S_BCLK    26\\n#define I2S_LRCLK   25\\n#define I2S_DOUT    22\\n\\ni2s_pin_config_t pin_config = {\\n  .bck_io_num   = I2S_BCLK,\\n  .ws_io_num    = I2S_LRCLK,\\n  .data_out_num = I2S_DOUT,\\n  .data_in_num  = I2S_PIN_NO_CHANGE\\n};\\n```\\n\\n### Sine table generation\\n\\n```cpp\\n#define TABLE_SIZE 256\\nint16_t sineTable[TABLE_SIZE];\\n\\nvoid buildSineTable() {\\n  for (int i = 0; i < TABLE_SIZE; i++) {\\n    float phase = (2.0f * PI * i) / TABLE_SIZE;\\n    float s = sinf(phase);\\n    sineTable[i] = (int16_t)(s * 28000.0f);\\n  }\\n}\\n```\\n\\n### Streaming the sine wave\\n\\n```cpp\\nconst int frames = 128;\\nint16_t buffer[frames * 2];\\nstatic float phaseIndex = 0.0f;\\n\\nvoid loop() {\\n  float phaseIncrement = (TABLE_SIZE * TONE_FREQUENCY) / (float)SAMPLE_RATE;\\n\\n  for (int i = 0; i < frames; i++) {\\n    if (phaseIndex >= TABLE_SIZE) phaseIndex -= TABLE_SIZE;\\n    int idx = (int)phaseIndex;\\n    int16_t sample = sineTable[idx];\\n    buffer[i * 2 + 0] = sample; // L\\n    buffer[i * 2 + 1] = sample; // R\\n    phaseIndex += phaseIncrement;\\n  }\\n\\n  size_t bytesWritten;\\n  i2s_write(I2S_PORT, buffer, sizeof(buffer), &bytesWritten, portMAX_DELAY);\\n}\\n```\\n\\n## Tweaks\\n\\n- Change `TONE_FREQUENCY` for different notes.\\n- Lower the multiplier in `sineTable[i] = (int16_t)(s * 28000.0f);`\\n  if the output is too loud or clips.\\n'
+  },
   {
     id: '101',
     title: 'Building Your First MIDI Controller',
@@ -165,7 +183,7 @@ export const toggleFeaturedResource = (id: string): void => {
 
 const TUTORIALS_KEY = 'eduhub_tutorials';
 const TUTORIALS_VERSION_KEY = 'eduhub_tutorials_version';
-const TUTORIALS_VERSION = 'v1';
+const TUTORIALS_VERSION = 'v2';
 
 export const getTutorials = (): Tutorial[] => {
   const stored = localStorage.getItem(TUTORIALS_KEY);
