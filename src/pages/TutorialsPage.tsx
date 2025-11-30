@@ -335,3 +335,67 @@ export const TutorialsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Admin Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-xl max-w-4xl w-full p-6 space-y-4 shadow-2xl transform transition-all scale-100 max-h-[90vh] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+                <h3 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Tutorial' : 'New Tutorial'}</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700">Title</label>
+                        <input required className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-accent outline-none" value={title} onChange={e => setTitle(e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700">Difficulty</label>
+                        <select className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-accent outline-none bg-white" value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-700">Video URL</label>
+                    <input className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-accent outline-none" value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://..." />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-700">Tags</label>
+                    <input className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-accent outline-none" value={tags} onChange={e => setTags(e.target.value)} />
+                </div>
+                
+                {/* Related Resources Selector */}
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-700">Attach Resources</label>
+                    <div className="h-48 overflow-y-auto border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
+                        {resources.map(res => (
+                            <div 
+                                key={res.id} 
+                                onClick={() => toggleRelatedResource(res.id)}
+                                className={`flex items-center gap-2 p-2 rounded cursor-pointer select-none transition-colors ${relatedIds.includes(res.id) ? 'bg-white border border-accent shadow-sm' : 'hover:bg-white'}`}
+                            >
+                                {relatedIds.includes(res.id) ? <CheckSquare className="w-4 h-4 text-accent" /> : <Square className="w-4 h-4 text-slate-400" />}
+                                <span className="text-sm text-slate-700 truncate">{res.title}</span>
+                            </div>
+                        ))}
+                        {resources.length === 0 && <div className="text-xs text-slate-400 p-2">No resources found. Add them in the Library first.</div>}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col h-full">
+                <label className="block text-sm font-medium mb-1 text-slate-700">Content (Markdown)</label>
+                <textarea required className="w-full flex-1 border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-accent outline-none font-mono text-sm" value={content} onChange={e => setContent(e.target.value)} />
+                
+                <div className="flex justify-end gap-2 mt-4">
+                    <Button type="button" variant="ghost" onClick={() => setShowModal(false)}>Cancel</Button>
+                    <Button type="submit" onClick={handleSave}>{editingId ? 'Update' : 'Save'}</Button>
+                </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
