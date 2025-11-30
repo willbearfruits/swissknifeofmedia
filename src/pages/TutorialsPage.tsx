@@ -11,6 +11,7 @@ import DOMPurify from 'dompurify';
 import { syncToGithub } from '../services/githubService';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css'; // Import the style
+import { resolvePath } from '../utils/pathUtils';
 
 export const TutorialsPage = () => {
   const { user } = useAuth();
@@ -274,7 +275,7 @@ export const TutorialsPage = () => {
                               <div className="text-xs text-slate-400">{res.type}</div>
                             </div>
                           </div>
-                          <a href={res.url} target="_blank" rel="noreferrer">
+                          <a href={res.url.startsWith('/') ? resolvePath(res.url) : res.url} target="_blank" rel="noreferrer">
                             <Button size="sm" variant="secondary">
                               <Download className="w-4 h-4" />
                             </Button>

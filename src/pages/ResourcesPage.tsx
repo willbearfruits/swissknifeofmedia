@@ -175,7 +175,7 @@ export const ResourcesPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-              <a href={res.url} target="_blank" rel="noreferrer">
+              <a href={res.url.startsWith('/') ? resolvePath(res.url) : res.url} target="_blank" rel="noreferrer">
                 <Button variant="secondary" size="sm" className="w-full md:w-auto">
                     <Download className="w-4 h-4 mr-2 opacity-50" /> Download
                 </Button>
