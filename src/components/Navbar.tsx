@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Layers, Terminal, LogOut, Settings, PenTool } from 'lucide-react';
+import { Home, BookOpen, Layers, Terminal, LogOut, Settings, PenTool, CloudUpload, RefreshCw, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { syncToGithub } from '../services/githubService';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem('theme') === 'dark' || 
+      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(!isDark);
 
   const isActive = (path: string) => 
     location.pathname === path 
@@ -18,6 +36,20 @@ export const Navbar = () => {
     { path: '/tutorials', label: 'Workshops', icon: <BookOpen className="w-4 h-4 mr-2" /> },
     { path: '/tools', label: 'Workbench', icon: <Terminal className="w-4 h-4 mr-2" /> },
   ];
+
+  const handleSync = async () => {
+    if (!user?.settings.githubToken) return;
+    try {
+      setIsSyncing(true);
+      await syncToGithub(user.settings.githubToken);
+      alert('Successfully synced changes to GitHub!');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to sync. Check console for details.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   return (
     <nav className="bg-gradient-to-r from-primary to-primaryLight backdrop-blur-md text-white sticky top-0 z-50 shadow-md border-b border-red-800 dark:border-slate-800">
@@ -45,6 +77,22 @@ export const Navbar = () => {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-3">
+                {user.role === 'ADMIN' && user.settings.githubToken && (
+                  <button 
+                    onClick={handleSync}
+                    disabled={isSyncing}
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2" 
+                    title="Sync changes to Cloud"
+                  >
+                    {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
+                    <span className="text-xs font-medium hidden md:inline">Publish</span>
+                  </button>
+                )}
+                
+                <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-black/10 text-red-100 hover:text-white transition-colors" title="Toggle Theme">
+                  {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+
                 <Link to="/settings" className="p-2 rounded-full hover:bg-black/10 text-red-100 hover:text-white transition-colors" title="Settings">
                   <Settings className="w-5 h-5" />
                 </Link>
