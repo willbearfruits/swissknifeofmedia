@@ -34,7 +34,7 @@ const AppContent = () => {
       </main>
       
       <footer className="bg-white/50 backdrop-blur-sm border-t border-slate-200 py-6 text-center text-xs text-slate-400 mt-auto">
-        <p>© 2025 SwissKnifeOfMedia. Built for the Creative Tech Community.</p>
+        <p>© 2025 The Rabbit Hole. Built for the Creative Tech Community.</p>
         {/* Force re-deploy */}
       </footer>
     </div>

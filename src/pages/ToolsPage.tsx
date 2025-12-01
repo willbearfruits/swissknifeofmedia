@@ -1,13 +1,10 @@
 import React from 'react';
 import { ResistorCalculator } from '../components/ResistorCalculator';
 import { CapacitorCalculator } from '../components/CapacitorCalculator';
+import { FilterCalculator } from '../components/FilterCalculator';
 import { SerialMonitor } from '../components/SerialMonitor';
 import { ToneGenerator } from '../components/ToneGenerator';
-import { TapTempo } from '../components/TapTempo';
-import { NoteConverter } from '../components/NoteConverter';
-import { DrumMachine } from '../components/DrumMachine';
-import { ResistorQuiz } from '../components/ResistorQuiz';
-import { ExternalLink, Cpu, Zap, Music } from 'lucide-react';
+import { ExternalLink, Cpu, Zap } from 'lucide-react';
 import { resolvePath } from '../utils/pathUtils';
 
 const schematics = [
@@ -37,7 +34,7 @@ export const ToolsPage = () => {
       {/* Header */}
       <div className="space-y-2">
         <h2 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
-            <Cpu className="w-8 h-8 text-primary" /> Media Lab Workbench
+            <Cpu className="w-8 h-8 text-primary" /> Rabbit Hole Workbench
         </h2>
         <p className="text-slate-600 max-w-2xl">
             Calculators for Filters/LEDs, Flashers for Daisy/ESP32, and Serial Monitors. 
@@ -45,34 +42,22 @@ export const ToolsPage = () => {
         </p>
       </div>
 
-      {/* Calculators */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="bg-white p-1 rounded-2xl shadow-sm border border-slate-200">
+      {/* Calculators Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="h-full">
              <ResistorCalculator />
         </div>
-        <div className="bg-white p-1 rounded-2xl shadow-sm border border-slate-200">
+        <div className="h-full">
              <CapacitorCalculator />
         </div>
-        <div className="bg-white p-1 rounded-2xl shadow-sm border border-slate-200">
-             <ResistorQuiz />
-        </div>
-        <div className="col-span-1 xl:col-span-2">
-             <ToneGenerator />
-        </div>
-        <div className="col-span-1 xl:col-span-2">
-             <DrumMachine />
+        <div className="h-full">
+             <FilterCalculator />
         </div>
       </div>
 
-      {/* Audio Utilities */}
-      <div className="space-y-4">
-        <h3 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <Music className="w-6 h-6 text-accent" /> Audio Utilities
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TapTempo />
-            <NoteConverter />
-        </div>
+      {/* Synth / Scope */}
+      <div className="w-full">
+          <ToneGenerator />
       </div>
 
       {/* External Tools */}

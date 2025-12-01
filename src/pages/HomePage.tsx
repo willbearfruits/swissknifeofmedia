@@ -24,7 +24,7 @@ export const HomePage = () => {
           Create. <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-orange-500">Synthesize.</span> Perform.
         </h1>
         <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          The Swiss Army Knife for <strong>New Media Artists</strong> & <strong>Synth Builders</strong>. 
+          The ultimate toolkit for <strong>New Media Artists</strong> & <strong>Synth Builders</strong>. 
           Manage course materials, calculate filter components, and flash your DIY instruments.
         </p>
         <div className="flex justify-center gap-4 pt-4">

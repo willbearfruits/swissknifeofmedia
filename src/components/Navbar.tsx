@@ -59,7 +59,7 @@ export const Navbar = () => {
             <div className="w-8 h-8 bg-white text-primaryLight rounded-md flex items-center justify-center shadow-md group-hover:rotate-3 transition-transform">
                <PenTool className="h-5 w-5" /> 
             </div>
-            <span className="tracking-tight">SwissKnife<span className="opacity-80 font-normal">OfMedia</span></span>
+            <span className="tracking-tight">The Rabbit Hole</span>
           </Link>
           
           <div className="hidden md:flex items-center space-x-2">
