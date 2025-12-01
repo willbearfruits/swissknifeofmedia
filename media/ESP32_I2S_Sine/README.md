@@ -1,90 +1,65 @@
-# ESP32 I2S Sine Wave (MAX98357A)
+# ESP32 I2S Sine Generator
 
-Simple ESP32 DevKit example that outputs a **440 Hz sine wave** over I2S
-to a MAX98357A I2S DAC/amp module.
+> "In the beginning, there was the Wave."
 
-## Wiring
+This is the "Hello World" of digital audio. Before you build granular synths or spectral delays, you need to prove you can make a sound.
 
-**ESP32 DevKit ↔ MAX98357A**
+This sketch turns an **ESP32** into a raw audio source, pumping a pure **440 Hz sine wave** over I2S to a **MAX98357A** DAC/Amp.
 
-- `GPIO26` → `BCLK` (or `BCK`)
-- `GPIO25` → `LRC` / `LRCLK` / `WS`
-- `GPIO22` → `DIN`
-- `5V`     → `VIN`
-- `GND`    → `GND`
+## ⚡ The Wiring
 
-Speaker:
+Connect your ESP32 to the MAX98357A. Don't cross the streams.
 
-- `SPK+` → speaker +
-- `SPK-` → speaker −
+| ESP32 Pin | MAX98357A Pin | Description |
+|-----------|---------------|-------------|
+| **GPIO 26** | **BCLK** | Bit Clock |
+| **GPIO 25** | **LRC** / WS | Word Select (L/R Clock) |
+| **GPIO 22** | **DIN** | Data In |
+| **5V / VIN** | **VIN** | Power |
+| **GND** | **GND** | Ground |
 
-Use a 4–8 Ω speaker; *do not* connect either speaker terminal to GND.
+**Speaker Output:**
+Connect a 4Ω or 8Ω speaker to the block terminal. **DO NOT** connect these to Ground. They are a differential pair.
 
-## How to use
+## 🔧 Execution
 
-1. Open `ESP32_I2S_Sine.ino` in Arduino IDE (folder name must match).
-2. Select your ESP32 board (e.g. **ESP32 Dev Module**).
-3. Flash the sketch.
-4. You should hear a 440 Hz continuous tone.
+1.  Open `ESP32_I2S_Sine.ino` in the Arduino IDE.
+2.  Select **ESP32 Dev Module**.
+3.  Flash it.
+4.  Enjoy the annoying beep. It means it's working.
 
-## Code snippets
+## 📜 The Source
 
-### I2S pin config
+### Pin Configuration
+We tell the ESP32 which pins control the data stream.
 
 ```cpp
-#define I2S_BCLK    26
-#define I2S_LRCLK   25
-#define I2S_DOUT    22
-
 i2s_pin_config_t pin_config = {
-  .bck_io_num   = I2S_BCLK,
-  .ws_io_num    = I2S_LRCLK,
-  .data_out_num = I2S_DOUT,
+  .bck_io_num   = 26,  // BCLK
+  .ws_io_num    = 25,  // LRC
+  .data_out_num = 22,  // DIN
   .data_in_num  = I2S_PIN_NO_CHANGE
 };
 ```
 
-### Sine table generation
+### The Math (Sine Table)
+We generate a lookup table (LUT) at startup. Why? because `sin()` is slow, and lookups are fast.
 
 ```cpp
-#define TABLE_SIZE 256
-int16_t sineTable[TABLE_SIZE];
-
 void buildSineTable() {
   for (int i = 0; i < TABLE_SIZE; i++) {
+    // 2π * i / size
     float phase = (2.0f * PI * i) / TABLE_SIZE;
-    float s = sinf(phase);
-    sineTable[i] = (int16_t)(s * 28000.0f);
+    // Scale to 16-bit signed integer (leaving some headroom)
+    sineTable[i] = (int16_t)(sinf(phase) * 28000.0f);
   }
 }
 ```
 
-### Streaming the sine wave
+## 🏴 Hacking It
 
-```cpp
-const int frames = 128;
-int16_t buffer[frames * 2];
-static float phaseIndex = 0.0f;
+*   **Change Pitch:** Modify `TONE_FREQUENCY`.
+*   **Distortion:** Crank the `28000.0f` multiplier up to `32767` (max 16-bit). It will clip. It will sound angry.
+*   **Modulation:** Try changing `phaseIncrement` dynamically in the loop. Congratulations, you just invented FM synthesis.
 
-void loop() {
-  float phaseIncrement = (TABLE_SIZE * TONE_FREQUENCY) / (float)SAMPLE_RATE;
-
-  for (int i = 0; i < frames; i++) {
-    if (phaseIndex >= TABLE_SIZE) phaseIndex -= TABLE_SIZE;
-    int idx = (int)phaseIndex;
-    int16_t sample = sineTable[idx];
-    buffer[i * 2 + 0] = sample; // L
-    buffer[i * 2 + 1] = sample; // R
-    phaseIndex += phaseIncrement;
-  }
-
-  size_t bytesWritten;
-  i2s_write(I2S_PORT, buffer, sizeof(buffer), &bytesWritten, portMAX_DELAY);
-}
-```
-
-## Tweaks
-
-- Change `TONE_FREQUENCY` for different notes.
-- Lower the multiplier in `sineTable[i] = (int16_t)(s * 28000.0f);`
-  if the output is too loud or clips.
+-- **Glitches**

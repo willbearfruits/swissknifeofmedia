@@ -1,46 +1,67 @@
+# The Rabbit Hole
 
-# SwissKnifeOfMedia
+> "Stay curious. Follow the white rabbit."
 
-Toolkit for media artists and synth builders: resource library, tutorial workspace with optional AI assistant, and embedded hardware utilities (serial monitor, ESP32 flasher UI, Daisy DFU prompt).
+**The Rabbit Hole** is a digital "Anarchist Cookbook" for the New Media underground. It is a unified archive for teachers, students, and synth-builders who are tired of hunting down scattered datasheets and broken calculators.
 
-## Run Locally
-- Prerequisites: Node.js 20+
-- Copy `.env.example` to `.env.local` (or `.env`) and fill your Firebase config.
-- Install: `npm install`
-- Develop: `npm run dev`
-- Build: `npm run build`
-- Type-check (no emit): `npx tsc --noEmit`
+This is the repository of **Glitches**. I built this to be the single source of truth for the knowledge I've gathered—shared freely to arm the next generation of noise-makers.
 
-## API Keys
-- Provide your Gemini API key in the app via **Settings → Gemini API Key** (stored locally).
-- Optional for local-only testing: set `VITE_GEMINI_API_KEY` in an environment file, but do not commit secrets or use this for public builds.
+## 🕳️ What's Inside?
 
-## Firebase Auth (secure login)
-- Create a Firebase project (no paid plan required for basic email/password auth).
-- Enable **Email/Password** sign-in in Firebase Console → Authentication.
-- Add your web app and copy the config into `.env.local` matching `.env.example`.
-- Optionally set `VITE_ADMIN_EMAILS` as a comma-separated allowlist for admin role.
-- For GitHub Pages builds, add the same values as repository secrets so the Actions workflow can inject them during `npm run build`:
-  - `VITE_FIREBASE_API_KEY`
-  - `VITE_FIREBASE_AUTH_DOMAIN`
-  - `VITE_FIREBASE_PROJECT_ID`
-  - `VITE_FIREBASE_STORAGE_BUCKET`
-  - `VITE_FIREBASE_MESSAGING_SENDER_ID`
-  - `VITE_FIREBASE_APP_ID`
-  - optional: `VITE_ADMIN_EMAILS`, `VITE_GEMINI_API_KEY`
+### 1. The Workbench (Tools)
+Your digital lab bench. No bloat, just the utilities you actually need when the soldering iron is hot.
+*   **Filter Plotter:** visualize RC low-pass/high-pass curves instantly.
+*   **Tone Generator:** A dual-oscillator synth + oscilloscope to test your audio chain.
+*   **Component Decoders:** Resistor color codes and capacitor shorthand (104 = ?).
+*   **Serial Monitor:** A WebSerial terminal to debug your Arduino/ESP32 projects directly from the browser.
 
-## Classroom PIN mode (simpler, no external setup)
-- If Firebase env vars are missing, the app falls back to a PIN gate: set `VITE_STUDENT_PIN` and `VITE_ADMIN_PIN` (defaults are empty).
-- Share the student PIN with the class; keep the admin PIN private for instructor access.
-- This is convenient for workshops but not strong security—use Firebase for real auth.
+### 2. The Library (Resources)
+The "Cookbook." A curated collection of PDFs, schematics, and deep-dive articles on experimental music and electronics.
 
-## Security Notes
-- Authentication now uses Firebase; passwords are never stored locally.
-- Admin role defaults to emails containing “admin” unless you specify `VITE_ADMIN_EMAILS`.
-- Resource/tutorial data still lives in `localStorage`; clearing browser storage resets that demo data.
-- Avoid bundling secrets; only set `VITE_GEMINI_API_KEY` for local testing.
+### 3. The Workshop (Tutorials)
+Step-by-step guides on building circuits, flashing firmware, and writing code.
 
-## Deploy to GitHub Pages
-- Push to `main`; `.github/workflows/deploy.yml` builds and publishes `dist` to the `gh-pages` branch.
-- In GitHub repo settings, enable Pages with **Source: GitHub Actions**.
-- Vite `base: './'` and `HashRouter` are configured for Pages paths.
+---
+
+## 🛠️ Protocol: Local Setup
+
+To run this locally, you need **Node.js 20+**.
+
+1.  **Clone the archive:**
+    ```bash
+    git clone https://github.com/willbearfruits/the-rabbit-hole.git
+    cd the-rabbit-hole
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure the Environment:**
+    Copy `.env.example` to `.env.local`.
+    
+    *   **Firebase Auth:** This uses Firebase for secure access. Create a free Firebase project, enable "Email/Password" auth, and drop your config keys here.
+    *   **Gemini AI (Optional):** If you want the AI assistant features, add your `VITE_GEMINI_API_KEY`. *Keep this secret.*
+    *   **Classroom Mode:** If you can't be bothered with Firebase, set `VITE_STUDENT_PIN` and `VITE_ADMIN_PIN`. The app will fall back to a simple PIN gate.
+
+4.  **Ignite:**
+    ```bash
+    npm run dev
+    ```
+
+## 🚀 Deployment
+
+We deploy to the edge.
+
+This project is configured for **GitHub Pages**.
+1.  Push to `main`.
+2.  The Action in `.github/workflows/deploy.yml` will build and ship the site.
+3.  **Important:** Add your `.env` variables (like `VITE_FIREBASE_API_KEY`) to your GitHub Repository Secrets so the build server can see them.
+
+## 🏴 Credits
+
+Built for the creative tech community.
+Share the wealth.
+
+**— Glitches**
