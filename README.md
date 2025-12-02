@@ -21,6 +21,12 @@ The "Cookbook." A curated collection of PDFs, schematics, and deep-dive articles
 ### 3. The Workshop (Tutorials)
 Step-by-step guides on building circuits, flashing firmware, and writing code.
 
+### 4. Musrara Toolkit
+A specialized portal for New Media students.
+*   **Artist Archive:** A curated database of 90+ pioneers in Glitch, Noise, and Interactive Art.
+*   **Pixel Sorter:** Browser-based image destruction tool.
+*   **CLI & AI Tools:** Quick reference for modern creative coding workflows.
+
 ---
 
 ## 🛠️ Protocol: Local Setup

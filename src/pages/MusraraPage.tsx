@@ -3,7 +3,6 @@ import { Wrench, Terminal, Image, Video, Brain, ExternalLink, Zap, Code, Mic, Pa
 import { Button } from '../components/Button';
 import { Link } from 'react-router-dom';
 import { GlitchBooth } from '../components/GlitchBooth';
-import { Oracle } from '../components/Oracle';
 
 export const MusraraPage = () => {
   return (
@@ -23,13 +22,8 @@ export const MusraraPage = () => {
       {/* Section 0: Creative Destruction (New) */}
       <section className="space-y-8">
         <SectionHeader icon={<Wand2 className="w-6 h-6" />} title="Creative Destruction" subtitle="Browser-based tools for immediate chaos." color="text-pink-500 bg-pink-50" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-                <GlitchBooth />
-            </div>
-            <div className="h-full">
-                <Oracle />
-            </div>
+        <div className="w-full">
+            <GlitchBooth />
         </div>
       </section>
 
