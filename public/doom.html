@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOOM</title>
+    <style>
+        html, body, #jsdos {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+    </style>
+    <script src="https://js-dos.com/6.22/current/js-dos.js"></script>
+</head>
+<body>
+    <div id="jsdos"></div>
+    <script>
+        Dos(document.getElementById("jsdos"), { 
+            wdosboxUrl: "https://js-dos.com/6.22/current/wdosbox.js",
+            cycles: 1000,
+            autolock: false
+        }).ready(function (fs, main) {
+            fs.extract("media/doom.jsdos").then(function () {
+                main(["-c", "doom.exe"]).then(function (ci) {
+                    // Game started
+                });
+            });
+        });
+    </script>
+</body>
+</html>
