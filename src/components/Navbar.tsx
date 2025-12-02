@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Layers, Terminal, LogOut, Settings, PenTool, CloudUpload, RefreshCw, Sun, Moon, Sparkles } from 'lucide-react';
+import { Home, BookOpen, Layers, Terminal, LogOut, Settings, PenTool, CloudUpload, RefreshCw, Sun, Moon, Sparkles, Palette } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { syncToGithub } from '../services/githubService';
 
@@ -34,6 +34,7 @@ export const Navbar = () => {
     { path: '/', label: 'Home', icon: <Home className="w-4 h-4 mr-2" /> },
     { path: '/resources', label: 'Library', icon: <Layers className="w-4 h-4 mr-2" /> },
     { path: '/tutorials', label: 'Workshops', icon: <BookOpen className="w-4 h-4 mr-2" /> },
+    { path: '/archive', label: 'Archive', icon: <Palette className="w-4 h-4 mr-2" /> },
     { path: '/tools', label: 'Workbench', icon: <Terminal className="w-4 h-4 mr-2" /> },
     { path: '/musrara', label: 'Musrara', icon: <Sparkles className="w-4 h-4 mr-2" /> },
   ];

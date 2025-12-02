@@ -30,16 +30,17 @@ const parseJSON = <T>(value: string | null, fallback: T): T => {
 // Load the global database from public/database.json and sync with localStorage
 export const initializeDatabase = async (): Promise<void> => {
   try {
-    const response = await fetch(resolvePath('/database.json'));
+    const response = await fetch(resolvePath(`/database.json?t=${Date.now()}`));
     if (!response.ok) throw new Error('Failed to fetch database.json');
     
     const remoteDb = await response.json();
     const remoteVersion = remoteDb.version;
 
     const currentStoredVersion = parseInt(localStorage.getItem('eduhub_db_version') || '0');
+    const hasArtists = !!localStorage.getItem(ARTISTS_KEY);
 
-    if (remoteVersion > currentStoredVersion) {
-      console.log(`Updating database from v${currentStoredVersion} to v${remoteVersion}`);
+    if (remoteVersion > currentStoredVersion || !hasArtists) {
+      console.log(`Updating database. Remote: v${remoteVersion}, Local: v${currentStoredVersion}, Missing Artists: ${!hasArtists}`);
       localStorage.setItem(RESOURCES_KEY, JSON.stringify(remoteDb.resources));
       localStorage.setItem(TUTORIALS_KEY, JSON.stringify(remoteDb.tutorials));
       localStorage.setItem(ARTISTS_KEY, JSON.stringify(remoteDb.artists || []));

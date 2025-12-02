@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, Zap, User, Layers, Wrench, Film, ExternalLink, Search, ArrowLeft } from 'lucide-react';
+import { Monitor, Zap, User, Layers, Wrench, Film, ExternalLink, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getArtists } from '../services/mockDb';
 import { Artist } from '../types';
@@ -43,9 +43,6 @@ export const ArtistArchivePage = () => {
         
         {/* Header */}
         <div className="mb-12">
-            <Link to="/musrara" className="inline-flex items-center text-slate-400 hover:text-purple-600 transition-colors mb-6">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Toolkit
-            </Link>
             <h1 className="text-6xl font-black text-slate-900 tracking-tighter mb-4">
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Archive</span>
             </h1>

@@ -30,7 +30,7 @@ const AppContent = () => {
           <Route path="/tutorials" element={<TutorialsPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/musrara" element={<MusraraPage />} />
-          <Route path="/musrara/archive" element={<ArtistArchivePage />} />
+          <Route path="/archive" element={<ArtistArchivePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/doom" element={<DoomPage />} />
           <Route path="*" element={<Navigate to="/" />} />

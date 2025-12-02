@@ -157,7 +157,7 @@ export const MusraraPage = () => {
                     A living index of 35+ artists defining the edge of media art. 
                     Explore the works of Rosa Menkman, Ryoji Ikeda, Nam June Paik, and more.
                 </p>
-                <Link to="/musrara/archive">
+                <Link to="/archive">
                     <Button size="lg" className="bg-white text-purple-900 hover:bg-purple-50 border-none">
                         Browse the Collection <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
