@@ -1,4 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
+import { Button } from '../components/Button';
+import { Downloads } from '../components/Downloads';
+import { getResources } from '../services/mockDb';
+import { ResourceType } from '../types';
 import { AsciiSunset } from '../components/AsciiSunset';
 
 export const HomePage = () => {
