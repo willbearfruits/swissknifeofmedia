@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "A digital toolkit and curated archive for New Media artists, synth-builders, and creative coders. Features calculators, a serial monitor, AI tools, a pixel sorter, and an artist archive.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
