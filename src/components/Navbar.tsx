@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Layers, Terminal, LogOut, Settings, PenTool, CloudUpload, RefreshCw, Sun, Moon, Sparkles, Palette } from 'lucide-react';
+import { Home, BookOpen, Layers, Terminal, LogOut, Settings, PenTool, CloudUpload, RefreshCw, Sun, Moon, Sparkles, Palette, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { syncToGithub } from '../services/githubService';
 
@@ -8,6 +8,7 @@ export const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     return localStorage.getItem('theme') === 'dark' || 
       (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -22,6 +23,11 @@ export const Navbar = () => {
       localStorage.setItem('theme', 'light');
     }
   }, [isDark]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
   const toggleTheme = () => setIsDark(!isDark);
 
@@ -64,6 +70,7 @@ export const Navbar = () => {
             <span className="tracking-tight">The Rabbit Hole</span>
           </Link>
           
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2">
             {user && navLinks.map((link) => (
               <Link
@@ -76,18 +83,18 @@ export const Navbar = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 {user.role === 'ADMIN' && user.settings.githubToken && (
                   <button 
                     onClick={handleSync}
                     disabled={isSyncing}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2" 
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-2 hidden md:flex" 
                     title="Sync changes to Cloud"
                   >
                     {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
-                    <span className="text-xs font-medium hidden md:inline">Publish</span>
+                    <span className="text-xs font-medium">Publish</span>
                   </button>
                 )}
                 
@@ -95,14 +102,21 @@ export const Navbar = () => {
                   {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </button>
 
-                <Link to="/settings" className="p-2 rounded-full hover:bg-black/10 text-red-100 hover:text-white transition-colors" title="Settings">
-                  <Settings className="w-5 h-5" />
-                </Link>
-                {user.role === 'ADMIN' && (
-                    <span className="px-2 py-1 text-xs font-bold bg-white text-primaryLight border border-white/20 rounded shadow-sm">ADMIN</span>
-                )}
-                <button onClick={logout} className="p-2 text-red-100 hover:text-white hover:bg-black/10 rounded-full" title="Logout">
-                  <LogOut className="w-5 h-5" />
+                <div className="hidden md:flex items-center gap-2">
+                    <Link to="/settings" className="p-2 rounded-full hover:bg-black/10 text-red-100 hover:text-white transition-colors" title="Settings">
+                    <Settings className="w-5 h-5" />
+                    </Link>
+                    <button onClick={logout} className="p-2 text-red-100 hover:text-white hover:bg-black/10 rounded-full" title="Logout">
+                    <LogOut className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Mobile Menu Button */}
+                <button 
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="md:hidden p-2 rounded-lg hover:bg-white/10 text-white transition-colors"
+                >
+                    {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
               </div>
             ) : (
@@ -111,6 +125,42 @@ export const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && user && (
+        <div className="md:hidden bg-primary border-t border-white/10 px-4 pt-2 pb-4 space-y-1 absolute w-full left-0 shadow-xl animate-fade-in">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`block px-3 py-3 rounded-lg text-base font-medium transition-colors flex items-center ${isActive(link.path)}`}
+              >
+                {link.icon} {link.label}
+              </Link>
+            ))}
+            <div className="border-t border-white/10 my-2 pt-2 space-y-1">
+                <Link to="/settings" className="block px-3 py-3 rounded-lg text-base font-medium text-red-100 hover:bg-white/10 flex items-center">
+                    <Settings className="w-4 h-4 mr-2" /> Settings
+                </Link>
+                {user.role === 'ADMIN' && user.settings.githubToken && (
+                    <button 
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        className="w-full text-left px-3 py-3 rounded-lg text-base font-medium text-red-100 hover:bg-white/10 flex items-center"
+                    >
+                        {isSyncing ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <CloudUpload className="w-4 h-4 mr-2" />}
+                        Publish Changes
+                    </button>
+                )}
+                <button 
+                    onClick={logout}
+                    className="w-full text-left px-3 py-3 rounded-lg text-base font-medium text-red-100 hover:bg-white/10 flex items-center"
+                >
+                    <LogOut className="w-4 h-4 mr-2" /> Logout
+                </button>
+            </div>
+        </div>
+      )}
     </nav>
   );
 };

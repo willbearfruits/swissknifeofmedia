@@ -167,185 +167,207 @@ export const TutorialsPage = () => {
 
   const imageResources = resources.filter(r => r.type === ResourceType.IMAGE);
 
+  const filteredTutorials = tutorials.filter(t => 
+    t.title.toLowerCase().includes(title.toLowerCase()) || 
+    t.tags.some(tag => tag.toLowerCase().includes(title.toLowerCase()))
+  );
+
+  // Overhauled View: Two modes - "Grid" and "Detail"
+  if (selectedTutorial) {
+      // Detail View (Reading Mode)
+      return (
+        <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in">
+            <div className="mb-6 flex items-center justify-between">
+                <button onClick={() => { setSelectedTutorial(null); setAiResponse(''); }} className="flex items-center text-slate-500 hover:text-primary transition-colors">
+                    <ArrowLeft className="w-5 h-5 mr-2" /> Back to Workshops
+                </button>
+                
+                {isAdmin && (
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="secondary" onClick={() => openEditModal(selectedTutorial)}>
+                            <Edit className="w-4 h-4 mr-2" /> Edit
+                        </Button>
+                        <Button size="sm" variant="danger" onClick={handleDelete}>
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </div>
+                )}
+            </div>
+
+            <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-slate-100">
+                <div className="border-b border-slate-100 pb-6 mb-8">
+                    <div className="flex gap-2 mb-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                            selectedTutorial.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
+                            selectedTutorial.difficulty === 'Intermediate' ? 'bg-orange-100 text-orange-700' :
+                            'bg-red-100 text-red-700'
+                        }`}>
+                            {selectedTutorial.difficulty}
+                        </span>
+                        {selectedTutorial.tags.map(tag => (
+                            <span key={tag} className="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-500">#{tag}</span>
+                        ))}
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 leading-tight">{selectedTutorial.title}</h1>
+                </div>
+
+                {selectedTutorial.videoUrl && (
+                    <div className="mb-10 rounded-2xl overflow-hidden shadow-lg aspect-video bg-black">
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            src={selectedTutorial.videoUrl} 
+                            title={selectedTutorial.title} 
+                            frameBorder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                )}
+
+                <div className="prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-a:text-primary hover:prose-a:text-accent">
+                    {(() => {
+                        const html = DOMPurify.sanitize(marked.parse(selectedTutorial.content) as string);
+                        return (
+                            <article
+                                className="tutorial-content"
+                                dangerouslySetInnerHTML={{ __html: html }}
+                            />
+                        );
+                    })()}
+                </div>
+
+                {/* Resources Footer */}
+                {selectedTutorial.relatedResourceIds && selectedTutorial.relatedResourceIds.length > 0 && (
+                    <div className="mt-12 pt-8 border-t border-slate-100">
+                        <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <Download className="w-5 h-5 text-accent" /> Downloads & Materials
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {resources
+                                .filter(r => selectedTutorial.relatedResourceIds?.includes(r.id))
+                                .map(res => (
+                                    <a key={res.id} href={res.url.startsWith('/') ? resolvePath(res.url) : res.url} target="_blank" rel="noreferrer" 
+                                       className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-accent/50 transition-all group">
+                                        <div className="p-3 bg-white rounded-lg shadow-sm text-primary group-hover:text-accent transition-colors">
+                                            <FileText className="w-6 h-6" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="font-bold text-slate-800 truncate">{res.title}</div>
+                                            <div className="text-xs text-slate-500">{res.type}</div>
+                                        </div>
+                                    </a>
+                                ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* AI Assistant (Fixed Bottom-Right or Inline?) Let's keep it inline at bottom for mobile friendless or fixed FAB? 
+                Inline is safer for layout overhaul. 
+            */}
+            {user?.settings.aiEnabled && (
+                <div className="mt-8 bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white shadow-2xl">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-white/10 rounded-lg"><Zap className="w-5 h-5 text-yellow-400" /></div>
+                        <h3 className="font-bold text-lg">AI Teaching Assistant</h3>
+                    </div>
+                    
+                    {aiResponse && (
+                        <div className="bg-white/10 p-4 rounded-xl mb-4 text-sm leading-relaxed border border-white/5">
+                            <React.Markdown>{aiResponse}</React.Markdown>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleAskAi} className="flex gap-2">
+                        <input 
+                            type="text" 
+                            placeholder="Confused? Ask specifically about this tutorial..." 
+                            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:bg-white/10 outline-none transition-all text-sm text-white placeholder-white/30"
+                            value={aiQuery}
+                            onChange={e => setAiQuery(e.target.value)}
+                        />
+                        <Button type="submit" isLoading={loadingAi} className="bg-white text-slate-900 hover:bg-white/90 px-6 rounded-xl font-bold">
+                            Ask
+                        </Button>
+                    </form>
+                </div>
+            )}
+        </div>
+      );
+  }
+
+  // Grid View (List)
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 h-[calc(100vh-80px)] flex gap-6 animate-fade-in relative">
+    <div className="max-w-7xl mx-auto px-4 py-12 space-y-8 animate-fade-in relative">
       {isSyncing && (
         <div className="fixed top-20 right-4 bg-white shadow-lg border border-slate-200 p-3 rounded-xl flex items-center gap-3 z-50 animate-bounce-in">
             <RefreshCw className="w-5 h-5 text-accent animate-spin" />
             <div className="text-sm font-medium text-slate-700">Syncing to Cloud...</div>
         </div>
       )}
-      {/* Sidebar */}
-      <div className={`w-full md:w-80 flex-col gap-2 overflow-y-auto pr-2 border-r border-slate-200/60 ${selectedTutorial ? 'hidden md:flex' : 'flex'}`}>
-        <div className="flex items-center justify-between px-2 mb-4">
-            <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" /> Workshops
-            </h3>
-            {isAdmin && (
-                <button onClick={openAddModal} className="p-1 hover:bg-slate-100 rounded-full transition-colors text-primary" title="Add Tutorial">
-                    <Plus className="w-5 h-5" />
-                </button>
-            )}
+
+      <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 border-b border-slate-200 pb-6">
+        <div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">Workshops</h1>
+            <p className="text-slate-500">Practical guides for hardware hacking and synthesis.</p>
         </div>
-        <div className="space-y-1">
-            {tutorials.map(tut => (
-            <button
-                key={tut.id}
-                onClick={() => { setSelectedTutorial(tut); setAiResponse(''); setAiQuery(''); }}
-                className={`w-full text-left p-3 rounded-xl transition-all group relative overflow-hidden ${
-                    selectedTutorial?.id === tut.id 
-                        ? 'bg-gradient-to-r from-primary to-primaryLight text-white shadow-lg shadow-red-200' 
-                        : 'hover:bg-white hover:shadow-sm text-slate-600'
-                }`}
-            >
-                <div className="flex justify-between items-start relative z-10">
-                    <div className="font-semibold pr-2">{tut.title}</div>
-                    {selectedTutorial?.id === tut.id && <ChevronRight className="w-4 h-4 opacity-80" />}
-                </div>
-                <div className={`text-xs mt-2 inline-block px-2 py-0.5 rounded-full font-medium relative z-10 ${
-                    selectedTutorial?.id === tut.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-white'
-                }`}>
-                {tut.difficulty}
-                </div>
-            </button>
-            ))}
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className={`flex-1 flex-col h-full overflow-hidden relative ${selectedTutorial ? 'flex' : 'hidden md:flex'}`}>
-        {selectedTutorial ? (
-          <div className="flex flex-col h-full gap-6">
-            {/* Tutorial Content */}
-            <div className="flex-1 bg-white p-8 rounded-2xl shadow-sm border border-slate-100 overflow-y-auto custom-scrollbar">
-              <div className="flex justify-between items-start border-b pb-4 border-slate-100 mb-6">
-                  <div className="flex items-center gap-3">
-                    <button onClick={() => setSelectedTutorial(null)} className="md:hidden p-1 -ml-2 text-slate-500 hover:text-primary">
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <h1 className="text-3xl font-bold text-primary m-0">{selectedTutorial.title}</h1>
-                  </div>
-                  {isAdmin && (
-                    <div className="flex gap-2">
-                        <Button size="sm" variant="secondary" onClick={() => openEditModal(selectedTutorial)}>
-                            <Edit className="w-4 h-4 mr-2" /> Edit
-                        </Button>
-                        <Button size="sm" variant="danger" onClick={handleDelete}>
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
-                        </Button>
-                    </div>
-                  )}
-              </div>
-              
-              {selectedTutorial.videoUrl && (
-                <div className="mb-8 rounded-xl overflow-hidden shadow-lg aspect-video bg-black">
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src={selectedTutorial.videoUrl} 
-                    title={selectedTutorial.title} 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              )}
-
-              {/* Markdown Content */}
-              <div className="prose max-w-none prose-slate prose-pre:bg-slate-800 prose-pre:text-white prose-pre:rounded-xl prose-headings:text-slate-800 prose-img:rounded-xl prose-img:shadow-lg">
-                {(() => {
-                  const html = DOMPurify.sanitize(marked.parse(selectedTutorial.content) as string);
-                  return (
-                <article
-                  className="tutorial-content font-sans text-slate-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
-                  );
-                })()}
-              </div>
-
-              {/* Related Resources Section */}
-              {selectedTutorial.relatedResourceIds && selectedTutorial.relatedResourceIds.length > 0 && (
-                <div className="mt-12 pt-8 border-t border-slate-100">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <Download className="w-5 h-5 text-accent" /> Downloads & Resources
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {resources
-                      .filter(r => selectedTutorial.relatedResourceIds?.includes(r.id))
-                      .map(res => (
-                        <div key={res.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-accent transition-colors group">
-                          <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="p-2 bg-white rounded-lg border border-slate-100">
-                              {res.type === 'PDF' ? <FileText className="w-5 h-5 text-red-500" /> : 
-                               res.type === 'LINK' ? <LinkIcon className="w-5 h-5 text-blue-500" /> :
-                               <Download className="w-5 h-5 text-slate-500" />}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="font-semibold text-slate-700 truncate">{res.title}</div>
-                              <div className="text-xs text-slate-400">{res.type}</div>
-                            </div>
-                          </div>
-                          <a href={res.url.startsWith('/') ? resolvePath(res.url) : res.url} target="_blank" rel="noreferrer">
-                            <Button size="sm" variant="secondary">
-                              <Download className="w-4 h-4" />
-                            </Button>
-                          </a>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* AI Assistant Panel */}
-            {user?.settings.aiEnabled ? (
-                <div className="bg-white border border-red-100 rounded-2xl p-4 flex flex-col gap-3 shadow-xl shadow-red-500/5 relative z-10">
-                    <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
-                        <Zap className="w-4 h-4 text-accent" />
-                        AI Teaching Assistant
-                    </div>
-                    
-                    {aiResponse && (
-                        <div className="bg-gradient-to-br from-red-50 to-white p-4 rounded-xl text-slate-700 text-sm max-h-60 overflow-y-auto border border-red-100 shadow-inner custom-scrollbar">
-                        <div className="flex gap-2">
-                            <MessageSquare className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                            <div>
-                                <React.Markdown>{aiResponse}</React.Markdown>
-                            </div>
-                        </div>
-                        </div>
-                    )}
-
-                    <form onSubmit={handleAskAi} className="flex gap-2">
-                        <input 
-                        type="text" 
-                        placeholder="Ask about wiring, code, or signal flow..." 
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all text-sm"
-                        value={aiQuery}
-                        onChange={e => setAiQuery(e.target.value)}
-                        />
-                        <Button type="submit" isLoading={loadingAi} className="bg-primary hover:bg-primaryLight px-6 rounded-xl">
-                        Ask
-                        </Button>
-                    </form>
-                </div>
-            ) : (
-                <div className="p-4 bg-slate-50 rounded-xl text-center text-sm text-slate-400 border border-slate-200 border-dashed">
-                    AI Assistant is disabled. Enable it in <Link to="/settings" className="underline hover:text-primary font-medium">Settings</Link>.
-                </div>
-            )}
-          </div>
-        ) : (
-          <div className="h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
-                 <BookOpen className="h-10 w-10 text-slate-300" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-600 mb-2">Ready to Learn?</h3>
-            <p className="text-slate-500 max-w-xs text-center">Select a workshop topic from the sidebar to begin your journey.</p>
-          </div>
+        {isAdmin && (
+            <Button onClick={openAddModal} className="shadow-lg shadow-red-200">
+                <Plus className="w-5 h-5 mr-2" /> Create Workshop
+            </Button>
         )}
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tutorials.map(tut => (
+            <div 
+                key={tut.id} 
+                onClick={() => setSelectedTutorial(tut)}
+                className="bg-white rounded-2xl border border-slate-200 p-6 cursor-pointer group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden"
+            >
+                <div className={`absolute top-0 left-0 w-1 h-full transition-colors ${
+                    tut.difficulty === 'Beginner' ? 'bg-green-400' : 
+                    tut.difficulty === 'Intermediate' ? 'bg-orange-400' : 'bg-red-500'
+                }`} />
+                
+                <div className="mb-4">
+                    <span className={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-2 ${
+                        tut.difficulty === 'Beginner' ? 'bg-green-50 text-green-600' : 
+                        tut.difficulty === 'Intermediate' ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'
+                    }`}>
+                        {tut.difficulty}
+                    </span>
+                    <h3 className="text-xl font-bold text-slate-800 leading-snug group-hover:text-primary transition-colors">
+                        {tut.title}
+                    </h3>
+                </div>
+                
+                <div className="flex-1">
+                    <p className="text-slate-500 text-sm line-clamp-3">
+                        {tut.content.replace(/[#*`]/g, '').slice(0, 150)}...
+                    </p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-sm text-slate-400">
+                    <div className="flex gap-2">
+                        {tut.tags.slice(0, 2).map(t => <span key={t}>#{t}</span>)}
+                    </div>
+                    <span className="flex items-center text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                        Start <ChevronRight className="w-4 h-4 ml-1" />
+                    </span>
+                </div>
+            </div>
+        ))}
+      </div>
+
+      {tutorials.length === 0 && (
+          <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+              <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-slate-500">No workshops found</h3>
+              <p className="text-slate-400">Check back later for new content.</p>
+          </div>
+      )}
 
       {/* Admin Modal */}
       {showModal && (

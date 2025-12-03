@@ -129,6 +129,30 @@ export const MusraraPage = () => {
                 tag="Video"
             />
              <ResourceLink 
+                title="Midjourney" 
+                desc="High-fidelity artistic image generation (Discord-based)."
+                url="https://www.midjourney.com/"
+                tag="Image"
+            />
+             <ResourceLink 
+                title="ChatGPT" 
+                desc="OpenAI's flagship conversational model."
+                url="https://chat.openai.com/"
+                tag="LLM"
+            />
+             <ResourceLink 
+                title="Claude" 
+                desc="Anthropic's safe and capable AI assistant."
+                url="https://claude.ai/"
+                tag="LLM"
+            />
+             <ResourceLink 
+                title="Gemini" 
+                desc="Google's multimodal AI assistant."
+                url="https://gemini.google.com/"
+                tag="LLM"
+            />
+             <ResourceLink 
                 title="Ollama" 
                 desc="Run Llama 3, Mistral, and Gemma locally."
                 url="https://ollama.com/"
